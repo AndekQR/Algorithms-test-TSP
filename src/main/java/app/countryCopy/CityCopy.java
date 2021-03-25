@@ -1,19 +1,20 @@
-package countryCopy;
+package app.countryCopy;
 
-import lombok.Builder;
-import lombok.Data;
+import app.view.myGraphView.DrawableCell;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
-public class CityCopy {
-    private String name;
+@Getter
+public class CityCopy extends DrawableCell {
+
     private Map<CityCopy, RoadCopy> directions;
 
     public CityCopy(String cityName) {
-        this.name = cityName;
+        this.name=cityName;
         this.directions=new HashMap<>();
+        this.initView();
     }
 
     public void addRoad(CityCopy direction, RoadCopy road) {
@@ -23,10 +24,10 @@ public class CityCopy {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("City name: "+name+"\n");
-        directions.forEach((cityCopy, roadCopy)-> {
-            stringBuilder.append(name).append(" -"+roadCopy.getDistance()+"-> ").append(cityCopy.getName()).append(
+        StringBuilder stringBuilder=new StringBuilder();
+        stringBuilder.append("City name: " + name + "\n");
+        directions.forEach((cityCopy, roadCopy) -> {
+            stringBuilder.append(name).append(" -" + roadCopy.getDistance() + "-> ").append(cityCopy.getName()).append(
                     "\n");
         });
         return stringBuilder.toString();
@@ -49,4 +50,5 @@ public class CityCopy {
         result=31 * result;
         return result;
     }
+
 }

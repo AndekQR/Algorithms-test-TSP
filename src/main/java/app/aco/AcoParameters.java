@@ -1,4 +1,4 @@
-package aco;
+package app.aco;
 
 public class AcoParameters {
     // Impact of pheromones on decision making.
@@ -12,6 +12,6 @@ public class AcoParameters {
     // Number of generations.
     static int generations=100;
 
-    static double randomFactor = 0.01;
-    static double q = 500;
+    static double randomFactor=0.01;
+    static double q=500;
 }

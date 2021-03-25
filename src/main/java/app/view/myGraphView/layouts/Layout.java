@@ -1,4 +1,4 @@
-package view;
+package app.view.myGraphView.layouts;
 
 public abstract class Layout {
 

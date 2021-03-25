@@ -1,4 +1,4 @@
-package countryCopy;
+package app.countryCopy;
 
 public class RedundantCityName extends Exception{
     public RedundantCityName(String label) {

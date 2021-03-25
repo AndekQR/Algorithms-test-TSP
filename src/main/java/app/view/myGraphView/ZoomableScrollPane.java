@@ -1,34 +1,45 @@
-package view;
+package app.view.myGraphView;
 
+import app.Main;
+import app.view.controlPanel.ControlPanel;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.transform.Scale;
 
 public class ZoomableScrollPane extends ScrollPane {
-    Group zoomGroup;
-    Scale scaleTransform;
-    Node content;
-    double scaleValue=1.0;
-    double delta=0.1;
+    private Group zoomGroup;
+    private Scale scaleTransform;
+    private Node content;
+    private double scaleValue=1.0;
+    private double delta=0.1;
 
     public ZoomableScrollPane(Node content) {
+
+        this.setStyle("-fx-background-color:transparent;");
+
         this.content=content;
         Group contentGroup=new Group();
         zoomGroup=new Group();
         contentGroup.getChildren().add(zoomGroup);
         zoomGroup.getChildren().add(content);
+
         setContent(contentGroup);
         scaleTransform=new Scale(scaleValue, scaleValue, 0, 0);
         zoomGroup.getTransforms().add(scaleTransform);
+
+        setPannable(true);
+        setHbarPolicy(ScrollBarPolicy.NEVER);
+        setVbarPolicy(ScrollBarPolicy.NEVER);
 
         zoomGroup.setOnScroll(new ZoomHandler());
     }
 
     public double getScaleValue() {
-        return scaleValue;
+        return this.scaleValue;
     }
 
     public void zoomToActual() {
@@ -36,19 +47,15 @@ public class ZoomableScrollPane extends ScrollPane {
     }
 
     public void zoomTo(double scaleValue) {
-
         this.scaleValue=scaleValue;
 
         scaleTransform.setX(scaleValue);
         scaleTransform.setY(scaleValue);
-
     }
 
     public void zoomActual() {
-
         scaleValue=1;
         zoomTo(scaleValue);
-
     }
 
     public void zoomOut() {
@@ -57,20 +64,16 @@ public class ZoomableScrollPane extends ScrollPane {
         if (Double.compare(scaleValue, 0.1) < 0) {
             scaleValue=0.1;
         }
-
         zoomTo(scaleValue);
     }
 
     public void zoomIn() {
-
         scaleValue+=delta;
 
         if (Double.compare(scaleValue, 10) > 0) {
             scaleValue=10;
         }
-
         zoomTo(scaleValue);
-
     }
 
     /**

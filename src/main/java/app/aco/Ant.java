@@ -1,9 +1,8 @@
-package aco;
+package app.aco;
 
-import cityUtils.City;
-import cityUtils.Road;
-import countryCopy.CityCopy;
-import countryCopy.RoadCopy;
+
+import app.countryCopy.CityCopy;
+import app.countryCopy.RoadCopy;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,12 +15,13 @@ import java.util.Optional;
 @Slf4j
 public class Ant {
 
-    private CityCopy currentCity, initialCity;
+    private CityCopy currentCity;
+    private final CityCopy initialCity;
     private RoadCopy lastTakenRoad;
 
-    private List<RoadCopy> visitedRoads=new LinkedList<>();
-    private List<CityCopy> visitedCities = new LinkedList<>();
-    private List<CityCopy> unvisitedCities=new LinkedList<>();
+    private final List<RoadCopy> visitedRoads=new LinkedList<>();
+    private final List<CityCopy> visitedCities=new LinkedList<>();
+    private final List<CityCopy> unvisitedCities=new LinkedList<>();
 
     private Double trailWeight=0.0;
 
@@ -44,7 +44,8 @@ public class Ant {
             this.lastTakenRoad=road;
             this.unvisitedCities.remove(city);
             this.visitedCities.add(city);
-        }, () -> {});
+        }, () -> {
+        });
 
     }
 
