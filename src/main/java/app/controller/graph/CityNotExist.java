@@ -1,4 +1,4 @@
-package app.countryCopy;
+package app.controller.graph;
 
 public class CityNotExist extends Exception{
     public CityNotExist(String label) {

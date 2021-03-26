@@ -25,7 +25,7 @@ public abstract class DrawableEdge extends Group {
 
         line=new Line();
         line.setStrokeWidth(3.0);
-        line.setStroke(Color.valueOf("#bcb8b1"));
+        line.setStroke(Color.rgb(189, 185, 178, 0.2));
 
         InvalidationListener listener=observable -> {
             updateStartXYLine();

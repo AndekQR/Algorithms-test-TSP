@@ -1,10 +1,9 @@
 package app.view.myGraphView.layouts;
 
 import app.Main;
-import app.countryCopy.CountryCopy;
+import app.controller.graph.Country;
 import app.view.controlPanel.ControlPanel;
 import app.view.myGraphView.DrawableCell;
-import app.view.myGraphView.layouts.Layout;
 
 
 import java.util.List;
@@ -13,10 +12,10 @@ import java.util.Random;
 
 public class RandomLayout extends Layout {
 
-    CountryCopy graph;
+    Country graph;
     Random rnd=new Random();
 
-    public RandomLayout(CountryCopy graph) {
+    public RandomLayout(Country graph) {
 
         this.graph=graph;
 

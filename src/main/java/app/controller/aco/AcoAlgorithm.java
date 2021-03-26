@@ -1,8 +1,8 @@
-package app.aco;
+package app.controller.aco;
 
-import app.countryCopy.CityCopy;
-import app.countryCopy.CountryCopy;
-import app.countryCopy.RoadCopy;
+import app.controller.graph.City;
+import app.controller.graph.Country;
+import app.controller.graph.Road;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -10,16 +10,16 @@ import java.util.stream.IntStream;
 
 public class AcoAlgorithm {
 
-    private final CountryCopy country;
+    private final Country country;
 
     private final Random random=new Random();
 
     private final Collection<Ant> ants=new ArrayList<>();
 
-    private List<RoadCopy> bestRoad;
+    private List<Road> bestRoad;
     private Ant bestAnt;
 
-    public AcoAlgorithm(CountryCopy country) {
+    public AcoAlgorithm(Country country) {
         this.country=country;
     }
 
@@ -36,8 +36,8 @@ public class AcoAlgorithm {
     }
 
     private void updateRoads() {
-        for (CityCopy cityCopy : this.country.getCities()) {
-            cityCopy.getDirections().forEach((cityCopy1, roadCopy) -> roadCopy.evaporatePheromones(AcoParameters.evaporation));
+        for (City city : this.country.getCities()) {
+            city.getDirections().forEach((cityCopy1, roadCopy) -> roadCopy.evaporatePheromones(AcoParameters.evaporation));
         }
         this.ants.forEach(ant -> ant.getLastTakenRoad().addPheromone(AcoParameters.q / ant.getTrailWeight()));
     }
@@ -53,7 +53,7 @@ public class AcoAlgorithm {
 
             if (this.random.nextDouble() < AcoParameters.randomFactor) {
                 int cityIndex=this.random.nextInt(this.country.countrySize() - 1); //TODO: może być problem z countrySIze
-                CityCopy randomCity=this.country.getCities().get(cityIndex);
+                City randomCity=this.country.getCities().get(cityIndex);
 
                 if (ant.isVisitPossible(randomCity)) {
                     ant.visitCity(randomCity);
@@ -62,7 +62,7 @@ public class AcoAlgorithm {
             }
 
             if (!visitedRandomCity) {
-                Map<CityCopy, Double> cityProbabilityMap=ant.getUnvisitedCities().stream()
+                Map<City, Double> cityProbabilityMap=ant.getUnvisitedCities().stream()
                         .filter(city -> ant.isVisitPossible(city))
                         .collect(Collectors.toMap(
                                 city -> city,
@@ -70,7 +70,7 @@ public class AcoAlgorithm {
                         ));
 
                 if (!cityProbabilityMap.isEmpty()) {
-                    Optional<Map.Entry<CityCopy, Double>> first=
+                    Optional<Map.Entry<City, Double>> first=
                             cityProbabilityMap.entrySet().stream().max(Comparator.comparingDouble(Map.Entry::getValue));
 //                    Optional<Map.Entry<City, Double>> first=cityProbabilityMap.entrySet().stream().sorted(
 //                            (Map.Entry<City, Double> c1, Map.Entry<City,
@@ -86,9 +86,9 @@ public class AcoAlgorithm {
         });
     }
 
-    private Double calculateProbability(Ant ant, CityCopy city) {
-        CityCopy antCurrentCity=ant.getCurrentCity();
-        Optional<RoadCopy> road=this.getRoad(city, antCurrentCity);
+    private Double calculateProbability(Ant ant, City city) {
+        City antCurrentCity=ant.getCurrentCity();
+        Optional<Road> road=this.getRoad(city, antCurrentCity);
         if (road.isPresent()) {
             Double visibility=1 / road.get().getDistance();
             Double intensity=road.get().getPheromone();
@@ -98,15 +98,15 @@ public class AcoAlgorithm {
         return 0.0;
     }
 
-    private Optional<RoadCopy> getRoad(CityCopy city1, CityCopy city2) {
+    private Optional<Road> getRoad(City city1, City city2) {
 //        return city1.getRoads().stream().filter(roadElement -> roadElement.getDirection().equals(city2)).findFirst();
         return Optional.ofNullable(city1.getDirections().get(city2));
     }
 
     private void initAnts() {
-        List<CityCopy> cityList=this.country.getCities();
+        List<City> cityList=this.country.getCities();
         IntStream.range(0, AcoParameters.ants).forEach(i -> {
-            CityCopy randomCity=cityList.get(this.random.nextInt(cityList.size() - 1));
+            City randomCity=cityList.get(this.random.nextInt(cityList.size() - 1));
             Ant ant=new Ant(randomCity, cityList);
             this.ants.add(ant);
         });

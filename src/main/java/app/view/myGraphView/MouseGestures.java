@@ -1,5 +1,6 @@
 package app.view.myGraphView;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -7,7 +8,7 @@ import javafx.scene.input.MouseEvent;
 public class MouseGestures {
 
     final DragContext dragContext=new DragContext();
-    GraphView graph;
+    GraphViewUtilities graph;
 
     EventHandler<MouseEvent> onMousePressedEventHandler=event -> {
         Node node=(Node) event.getSource();
@@ -19,22 +20,24 @@ public class MouseGestures {
     };
 
     EventHandler<MouseEvent> onMouseDraggedEventHandler=event -> {
-        Node node=(Node) event.getSource();
+        Platform.runLater(() -> {
+            Node node=(Node) event.getSource();
 
-        double offsetX=event.getScreenX() + dragContext.x;
-        double offsetY=event.getScreenY() + dragContext.y;
+            double offsetX=event.getScreenX() + dragContext.x;
+            double offsetY=event.getScreenY() + dragContext.y;
 
-        double scale=graph.getScale();
+            double scale=graph.getScale();
 
-        offsetX/=scale;
-        offsetY/=scale;
+            offsetX/=scale;
+            offsetY/=scale;
 
-        node.relocate(offsetX, offsetY);
+            node.relocate(offsetX, offsetY);
+        });
     };
 
     EventHandler<MouseEvent> onMouseReleasedEventHandler=event -> { };
 
-    public MouseGestures(GraphView graph) {
+    public MouseGestures(GraphViewUtilities graph) {
         this.graph=graph;
     }
 

@@ -1,4 +1,4 @@
-package app.view.controlPanel.algorithmsPanes;
+package app.view.controlPanel.panes;
 
 import javafx.scene.layout.Pane;
 

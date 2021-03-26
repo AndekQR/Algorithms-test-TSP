@@ -1,16 +1,15 @@
-package app.countryCopy;
+package app.controller.graph;
 
-import app.helpers.Helpers;
+import app.controller.helpers.Helpers;
 import app.view.myGraphView.DrawableCell;
 import app.view.myGraphView.DrawableEdge;
 import lombok.*;
-import lombok.experimental.Helper;
 
 @EqualsAndHashCode(callSuper=false)
 @Getter
 @Setter
 @Builder
-public class RoadCopy extends DrawableEdge {
+public class Road extends DrawableEdge {
     private Double distance;
     private Double pheromone;
 

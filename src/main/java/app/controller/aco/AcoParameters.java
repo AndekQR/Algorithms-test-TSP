@@ -1,4 +1,4 @@
-package app.aco;
+package app.controller.aco;
 
 public class AcoParameters {
     // Impact of pheromones on decision making.

@@ -1,4 +1,4 @@
-package app.countryCopy;
+package app.controller.graph;
 
 import app.view.myGraphView.DrawableCell;
 import lombok.Getter;
@@ -7,17 +7,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-public class CityCopy extends DrawableCell {
+public class City extends DrawableCell {
 
-    private Map<CityCopy, RoadCopy> directions;
+    private Map<City, Road> directions;
 
-    public CityCopy(String cityName) {
+    public City(String cityName) {
         this.name=cityName;
         this.directions=new HashMap<>();
         this.initView();
     }
 
-    public void addRoad(CityCopy direction, RoadCopy road) {
+    public void addRoad(City direction, Road road) {
         if (direction.getName().equals(name)) return;
         directions.put(direction, road);
     }
@@ -36,12 +36,12 @@ public class CityCopy extends DrawableCell {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CityCopy)) return false;
+        if (!(o instanceof City)) return false;
 
-        CityCopy cityCopy=(CityCopy) o;
+        City city=(City) o;
 
-        if (!name.equals(cityCopy.name)) return false;
-        return directions.equals(cityCopy.directions);
+        if (!name.equals(city.name)) return false;
+        return directions.equals(city.directions);
     }
 
     @Override

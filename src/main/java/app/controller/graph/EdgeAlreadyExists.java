@@ -1,4 +1,4 @@
-package app.countryCopy;
+package app.controller.graph;
 
 public class EdgeAlreadyExists extends Exception{
     public EdgeAlreadyExists(String vertexOne, String vertexTwo) {
