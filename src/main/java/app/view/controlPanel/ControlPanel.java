@@ -1,12 +1,15 @@
 package app.view.controlPanel;
 
+import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.utils.AlgorithmsMediator;
 import app.view.myGraphView.GraphView;
 import javafx.scene.layout.VBox;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
+@Slf4j
 public class ControlPanel extends VBox implements Controlling {
 
     public static double WIDTH=250;

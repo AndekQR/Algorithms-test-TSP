@@ -1,15 +1,24 @@
 package app.controller.utils;
 
 import app.controller.graph.*;
+import app.controller.helpers.Helpers;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
 @Slf4j
 public class GraphCreator {
 
-    public static Country getMyCountryCopy() {
+    ExecutorService executorService = Executors.newFixedThreadPool(6);
+
+
+    public Country getMyCountryCopy() {
         Country country=new Country();
 
         try {
@@ -33,28 +42,45 @@ public class GraphCreator {
         return country;
     }
 
-    public static Country createFullGraph(int vertices) {
-        Faker faker=new Faker();
+    public Country createFullGraph(int vertices) {
+
         Country country=new Country();
+
         IntStream.range(0, vertices).forEach(i -> {
             try {
-                country.createCity(faker.address().city());
-            } catch (RedundantCityName ignored) {
-
+                country.createCity(String.valueOf(++i));
+            } catch (Exception ignored) {
+//                log.error(ignored.getLocalizedMessage());
             }
         });
-        for (City city : country.getCities()) {
-            for (City city1 : country.getCities()) {
-                try {
-                    country.addEdge(city.getName(), city1.getName(), faker.number().numberBetween(0, 50),
-                            faker.number().randomDouble(2, 0,
-                                    50));
-                } catch (CityNotExist | RedundantCityName | EdgeAlreadyExists exception) {
-                    log.error(exception.getLocalizedMessage());
-                }
-            }
 
+
+        List<City> cities=country.getCities();
+        for (City city : cities) {
+                executorService.submit(() -> {
+                    for (City city1 : cities) {
+                        try {
+                            country.addEdge(city, city1, Helpers.getRandomNumber(0, 50),
+                                    Helpers.getRandomNumber(0, 50));
+                        } catch (RedundantCityName ignored) {
+//                            log.info(ignored.getLocalizedMessage());
+                        }
+                    }
+                });
         }
+
+        Helpers.awaitTerminationAfterShutdown(executorService);
+
+        log.info("Graph has been generated!");
         return country;
+    }
+
+    private Set<String> getCitiesNames(int number) {
+        Faker faker=new Faker();
+        Set<String> names=new HashSet<>();
+        while (names.size() < number) {
+            names.add(faker.address().city());
+        }
+        return names;
     }
 }

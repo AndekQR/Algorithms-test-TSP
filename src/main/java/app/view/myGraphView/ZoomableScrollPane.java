@@ -1,13 +1,10 @@
 package app.view.myGraphView;
 
-import app.Main;
-import app.view.controlPanel.ControlPanel;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.transform.Scale;
 
 public class ZoomableScrollPane extends ScrollPane {
@@ -15,7 +12,7 @@ public class ZoomableScrollPane extends ScrollPane {
     private Scale scaleTransform;
     private Node content;
     private double scaleValue=1.0;
-    private double delta=0.1;
+    private double delta=0.06;
 
     public ZoomableScrollPane(Node content) {
 
@@ -112,19 +109,15 @@ public class ZoomableScrollPane extends ScrollPane {
 
         @Override
         public void handle(ScrollEvent scrollEvent) {
-            // if (scrollEvent.isControlDown())
-            {
 
-                if (scrollEvent.getDeltaY() < 0) {
-                    scaleValue-=delta;
-                } else {
-                    scaleValue+=delta;
-                }
-
-                zoomTo(scaleValue);
-
-                scrollEvent.consume();
+            if (scrollEvent.getDeltaY() < 0) {
+                zoomOut();
+            } else {
+                zoomIn();
             }
+
+            scrollEvent.consume();
+
         }
     }
 }

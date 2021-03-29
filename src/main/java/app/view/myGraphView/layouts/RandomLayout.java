@@ -6,8 +6,10 @@ import app.view.controlPanel.ControlPanel;
 import app.view.myGraphView.DrawableCell;
 
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 
 public class RandomLayout extends Layout {
@@ -23,12 +25,13 @@ public class RandomLayout extends Layout {
 
     public void execute() {
 
-        List<? extends DrawableCell> cells=graph.getCities();
+        Collection<? extends DrawableCell> cells=graph.getCities();
 
 
         for (DrawableCell cell : cells) {
             this.relocate(cell);
         }
+
 
     }
 

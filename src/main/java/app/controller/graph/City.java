@@ -2,23 +2,25 @@ package app.controller.graph;
 
 import app.view.myGraphView.DrawableCell;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
+@Slf4j
 public class City extends DrawableCell {
 
-    private Map<City, Road> directions;
+    private final Map<City, Road> directions;
 
     public City(String cityName) {
         this.name=cityName;
-        this.directions=new HashMap<>();
+        this.directions=new ConcurrentHashMap<>();
         this.initView();
     }
 
     public void addRoad(City direction, Road road) {
-        if (direction.getName().equals(name)) return;
         directions.put(direction, road);
     }
 
@@ -46,8 +48,12 @@ public class City extends DrawableCell {
 
     @Override
     public int hashCode() {
-        int result=name.hashCode();
-        result=31 * result;
+        int result=31 * name.hashCode();
+
+//        for (City city : this.directions.keySet()) {
+//            result+=city.getName().hashCode();
+//        }
+        result+=this.directions.values().hashCode();
         return result;
     }
 

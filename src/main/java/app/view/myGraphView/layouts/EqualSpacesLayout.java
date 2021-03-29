@@ -2,9 +2,13 @@ package app.view.myGraphView.layouts;
 
 import app.controller.graph.Country;
 import app.view.myGraphView.DrawableCell;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
+@Slf4j
 public class EqualSpacesLayout extends Layout {
 
     private Country graph;
@@ -17,7 +21,7 @@ public class EqualSpacesLayout extends Layout {
 
     @Override
     public void execute() {
-        List<? extends DrawableCell> cells=graph.getCities();
+        Collection<? extends DrawableCell> cells=graph.getCities();
         double currentX=1;
         double currentY=1;
 
@@ -28,7 +32,6 @@ public class EqualSpacesLayout extends Layout {
                 currentY++;
                 currentX=1;
             }
-
             cell.relocate(currentX * step, currentY * step);
 
             currentX++;

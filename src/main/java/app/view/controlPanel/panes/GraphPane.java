@@ -1,5 +1,6 @@
 package app.view.controlPanel.panes;
 
+import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.utils.GraphCreator;
 import app.view.controlPanel.ControlPanel;
@@ -78,7 +79,7 @@ public class GraphPane extends VBox {
             this.generateButton.setOnMouseClicked(event -> {
                 String noVerticesText=noVerticesTextField.getText();
                 int noVertices=Integer.parseInt(noVerticesText);
-                Country fullGraph=GraphCreator.createFullGraph(noVertices);
+                Country fullGraph=new GraphCreator().createFullGraph(noVertices);
                 GraphPane.this.controlPanel.setGraphForProcessing(fullGraph);
             });
         }

@@ -17,16 +17,28 @@ public abstract class DrawableEdge extends Group {
     private DrawableCell target;
     private Line line;
     private Text lineText;
+    private boolean initialized;
 
 
-    protected void initLine(DrawableCell source, DrawableCell target, Double distance, Double pheromone) {
+    public void initLine(DrawableCell source, DrawableCell target) {
         this.source=source;
         this.target=target;
+        this.setCache(true);
 
         line=new Line();
         line.setStrokeWidth(3.0);
-        line.setStroke(Color.rgb(189, 185, 178, 0.2));
+//        line.setStroke(Color.rgb(189, 185, 178, 0.2));
 
+        setListener();
+
+        getChildren().add(line);
+
+//        this.lineText=getTextLine();
+//        getChildren().add(lineText);
+//        updateLineText(distance, pheromone);
+    }
+
+    private void setListener() {
         InvalidationListener listener=observable -> {
             updateStartXYLine();
             updateEndXYLine();
@@ -37,12 +49,6 @@ public abstract class DrawableEdge extends Group {
         source.getCenterX().addListener(listener);
         source.getCenterY().addListener(listener);
         listener.invalidated(null);
-
-        getChildren().add(line);
-
-        this.lineText = getTextLine();
-        getChildren().add(lineText);
-        updateLineText(distance,pheromone);
     }
 
     private Text getTextLine() {
@@ -87,6 +93,39 @@ public abstract class DrawableEdge extends Group {
 
     public String getTargetName() {
         return this.target.getName();
+    }
+
+
+    public void drawHighlightedLine() {
+        this.line.setStroke(Color.rgb(230, 57, 70, 0.5));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DrawableEdge)) return false;
+
+        DrawableEdge that=(DrawableEdge) o;
+
+        if (source == null && (that.source != null)) return false;
+        if (target == null && (that.target != null)) return false;
+        if (that.source == null && (source != null)) return false;
+        if (that.target == null && (target != null)) return false;
+
+        if (source != null && target != null) {
+            if (
+                    (!source.equals(that.source) && !target.equals(that.target)) ||
+                            (!source.equals(that.target) && !target.equals(that.source)))
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result=source != null ? source.hashCode() * 31 : 0;
+        result=result + (target != null ? target.hashCode() * 31 : 0);
+        return result;
     }
 
 }

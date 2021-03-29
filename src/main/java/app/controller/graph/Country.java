@@ -1,14 +1,20 @@
 package app.controller.graph;
 
+import app.controller.helpers.Helpers;
 import app.view.myGraphView.GraphViewUtilities;
 import javafx.scene.Node;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 
 @Getter
+@Slf4j
 public class Country extends GraphViewUtilities {
 
     private final List<City> cities=new ArrayList<>();
@@ -23,24 +29,32 @@ public class Country extends GraphViewUtilities {
         if (vertexOne.isEmpty()) throw new CityNotExist(vertexOneLabel);
         if (vertexTwo.isEmpty()) throw new CityNotExist(vertexTwoLabel);
 
-        Road oneToTwoRoad=Road.builder()
-                .distance(weight)
-                .pheromone(initialPheromone)
-                .build();
+        Road road=new Road(weight, initialPheromone, vertexOneLabel + "-" + vertexTwoLabel);
 
-        vertexOne.get().addRoad(vertexTwo.get(), oneToTwoRoad);
-        vertexTwo.get().addRoad(vertexOne.get(), oneToTwoRoad);
+        vertexOne.get().addRoad(vertexTwo.get(), road);
+        vertexTwo.get().addRoad(vertexOne.get(), road);
 
+    }
+
+    public void addEdge(City city1, City city2, double weight, double initialPheromone) throws RedundantCityName {
+
+        if (city1.equals(city2)) throw new RedundantCityName(city1.getName());
+
+        String name=city1.getName() + "-" + city2.getName();
+        Road road=new Road(weight, initialPheromone, name);
+        synchronized (this) {
+            city1.addRoad(city2, road);
+            city2.addRoad(city1, road);
+//            road.initLine(city1, city2); TODO: krawędź można incjalizować podczas jej wyróżniania
+        }
     }
 
     private boolean vertexExists(String label) {
         return this.cities.stream().anyMatch(city -> city.getName().equals(label));
     }
 
-    private boolean roadExists(String cityOneName, String cityTwoName) throws RedundantCityName {
-        City city=getCity(cityOneName);
-        City direction=getCity(cityTwoName);
-        return city.getDirections().containsKey(direction);
+    private boolean roadExists(City cityOne, City cityTwo) {
+        return cityOne.getDirections().containsKey(cityTwo);
     }
 
     public City getCity(String label) throws RedundantCityName { //TODO: nie powinno dodawać nowego wierzchołka
@@ -80,16 +94,25 @@ public class Country extends GraphViewUtilities {
 
     //borderPane | scrollPane | canvas(Group) | cellLayer(Pane)
     public void addNodesToView() {
+        ExecutorService executorService=Executors.newFixedThreadPool(12);
         this.initView();
+
+        log.info("Adding nodes to view...");
 
         for (City city : this.cities) {
             this.addCellToDraw(city);
+        }
+
+        for (City city : this.cities) {
             city.getDirections().forEach((cityCopy1, roadCopy) -> {
                 this.addEdgeToDraw(roadCopy, city, cityCopy1);
             });
         }
+        log.info("Adding nodes to view completed");
         this.drawAddedNodes();
-        this.makeCellsDraggable();
+        executorService.submit(this::makeCellsDraggable);
+
+        Helpers.awaitTerminationAfterShutdown(executorService);
     }
 
     @Override
