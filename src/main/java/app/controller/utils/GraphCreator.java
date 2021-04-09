@@ -17,34 +17,9 @@ public class GraphCreator {
 
     ExecutorService executorService = Executors.newFixedThreadPool(6);
 
+    public Country createFullGraph(int vertices, String name) {
 
-    public Country getMyCountryCopy() {
-        Country country=new Country();
-
-        try {
-            country.createCity("a");
-            country.createCity("b");
-            country.createCity("c");
-            country.createCity("d");
-            country.createCity("e");
-
-            country.addEdge("a", "b", 10, 24);
-            country.addEdge("a", "c", 10, 24);
-            country.addEdge("c", "e", 10, 24);
-            country.addEdge("d", "e", 10, 24);
-            country.addEdge("d", "b", 10, 24);
-            country.addEdge("d", "c", 10, 24);
-        } catch (EdgeAlreadyExists | CityNotExist | RedundantCityName exception) {
-            exception.printStackTrace();
-            log.error(exception.getLocalizedMessage());
-        }
-
-        return country;
-    }
-
-    public Country createFullGraph(int vertices) {
-
-        Country country=new Country();
+        Country country=new Country(name);
 
         IntStream.range(0, vertices).forEach(i -> {
             try {

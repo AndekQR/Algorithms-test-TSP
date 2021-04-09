@@ -25,7 +25,7 @@ public class GraphCreatorTest {
     @Test
     void checkGraph() {
         int vertices=100;
-        Country fullGraph=graphCreator.createFullGraph(vertices);
+        Country fullGraph=graphCreator.createFullGraph(vertices, "test");
         int createdEdges = 0;
         for (City city : fullGraph.getCities()) {
             createdEdges += city.getDirections().size();

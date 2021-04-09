@@ -1,5 +1,6 @@
 package app;
 
+import app.db.Database;
 import app.view.controlPanel.ControlPanel;
 import app.view.myGraphView.GraphView;
 import javafx.application.Application;
@@ -32,7 +33,6 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
-
 
 //        AcoAlgorithm acoAlgorithm=new AcoAlgorithm(copyGraph);
 //        acoAlgorithm.solve();

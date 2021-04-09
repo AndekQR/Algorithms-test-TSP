@@ -1,15 +1,20 @@
 package app.view.controlPanel.panes;
 
-import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.utils.GraphCreator;
+import app.db.Database;
 import app.view.controlPanel.ControlPanel;
 import app.view.controlPanel.Controlling;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Generowanie grafu o określonej ilości wierzchołków
@@ -18,27 +23,53 @@ import javafx.scene.layout.VBox;
  */
 public class GraphPane extends VBox {
 
-    private Controlling controlPanel;
+    private final Controlling controlPanel;
+    private final ListView<String> listView;
+    private final Database database;
+    private final ExecutorService executor;
 
     public GraphPane(Controlling controlPanel) {
-        this.controlPanel=controlPanel;
-        RandomGraphGenerator randomGraphGenerator=new RandomGraphGenerator();
+        this.controlPanel = controlPanel;
+        this.database = new Database();
+        this.executor = Executors.newSingleThreadExecutor();
+        RandomGraphGenerator randomGraphGenerator = new RandomGraphGenerator();
         this.getChildren().add(randomGraphGenerator);
+
+        this.listView = createListView();
+        this.getChildren().add(listView);
+    }
+
+    private ListView<String> createListView() {
+        ListView<String> listView = new ListView<>();
+        List<String> graphsNames = database.getGraphsNames();
+        for (String graphsName : graphsNames) {
+            listView.getItems().add(graphsName);
+        }
+
+        listView.setOnMouseClicked(event -> {
+            String selectedItem = listView.getSelectionModel().getSelectedItem();
+            if (!selectedItem.isBlank()) {
+                Country graph = database.getGraph(selectedItem);
+                controlPanel.setGraphForProcessing(graph);
+            }
+        });
+        return listView;
     }
 
     class RandomGraphGenerator extends GridPane {
 
-        private TextField noVerticesTextField;
-        private TextField graphNameTextField;
-        private Button generateButton;
-        private Button saveButton;
+        private final TextField noVerticesTextField;
+        private final TextField graphNameTextField;
+        private final Button generateButton;
+        private final Button saveButton;
+        private Country latestGeneratedGraph;
 
 
         public RandomGraphGenerator() {
-            this.noVerticesTextField=getFormattedTextField("Graph vertices");
-            this.graphNameTextField=getFormattedTextField("Graph name");
-            this.generateButton=getGenerateButton();
-            this.saveButton=getSaveButton();
+            this.noVerticesTextField = getFormattedTextField("Graph vertices");
+            this.graphNameTextField = getFormattedTextField("Graph name");
+            this.generateButton = getGenerateButton();
+            this.saveButton = getSaveButton();
 
             this.setVgap(2);
             this.setPadding(new Insets(5, 0, 5, 0));
@@ -55,20 +86,28 @@ public class GraphPane extends VBox {
         private boolean isValueGood(String intValue) {
             int value;
             try {
-                value=Integer.parseInt(intValue);
+                value = Integer.parseInt(intValue);
             } catch (NumberFormatException ignored) {
                 return false;
             }
 
-            if (value <= 0) return false;
-            return true;
+            return value > 0;
         }
+
 
         private void initActions() {
             this.noVerticesTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (isValueGood(newValue)) {
+                if (isValueGood(newValue) && !graphNameTextField.getText().isBlank()) {
                     this.generateButton.setDisable(false);
-                    this.saveButton.setDisable(false);
+                    return;
+                }
+                this.generateButton.setDisable(true);
+                this.saveButton.setDisable(true);
+            });
+
+            graphNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (isValueGood(noVerticesTextField.getText()) && !newValue.isBlank()) {
+                    this.generateButton.setDisable(false);
                     return;
                 }
                 this.generateButton.setDisable(true);
@@ -77,15 +116,30 @@ public class GraphPane extends VBox {
 
 
             this.generateButton.setOnMouseClicked(event -> {
-                String noVerticesText=noVerticesTextField.getText();
-                int noVertices=Integer.parseInt(noVerticesText);
-                Country fullGraph=new GraphCreator().createFullGraph(noVertices);
-                GraphPane.this.controlPanel.setGraphForProcessing(fullGraph);
+                String noVerticesText = noVerticesTextField.getText();
+                int noVertices = Integer.parseInt(noVerticesText);
+                String name = graphNameTextField.getText();
+                latestGeneratedGraph = new GraphCreator().createFullGraph(noVertices, name);
+                GraphPane.this.controlPanel.setGraphForProcessing(latestGeneratedGraph);
+                if (!graphNameTextField.getText().isBlank() && latestGeneratedGraph != null)
+                    saveButton.setDisable(false);
+            });
+
+            saveButton.setOnMouseClicked(event -> {
+                if (latestGeneratedGraph != null) {
+                    listView.getItems().add(latestGeneratedGraph.getName());
+                    executor.submit(() -> {
+                        database.saveGraph(latestGeneratedGraph);
+                    });
+                    noVerticesTextField.clear();
+                    graphNameTextField.clear();
+                }
             });
         }
 
+
         private TextField getFormattedTextField(String text) {
-            TextField textField=new TextField();
+            TextField textField = new TextField();
             textField.setPromptText(text);
             textField.setPrefWidth(ControlPanel.WIDTH * 0.6);
             textField.setPrefHeight(25);
@@ -93,7 +147,7 @@ public class GraphPane extends VBox {
         }
 
         private Button getGenerateButton() {
-            Button button=new Button("Generate");
+            Button button = new Button("Generate");
             button.setPrefWidth(ControlPanel.WIDTH * 0.4);
             button.setPrefHeight(50);
             button.setDisable(true);
@@ -101,7 +155,7 @@ public class GraphPane extends VBox {
         }
 
         private Button getSaveButton() {
-            Button button=new Button("Save graph");
+            Button button = new Button("Save graph");
             button.setPrefHeight(25);
             button.setPrefWidth(ControlPanel.WIDTH);
             button.setDisable(true);

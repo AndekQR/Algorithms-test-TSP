@@ -1,3 +1,5 @@
 .scroll-pane > .viewport {
     -fx-background-color: #f4f3ee;
 }
+
+.list-view, .split-pane { -fx-background-insets: 0; -fx-padding: 0; }

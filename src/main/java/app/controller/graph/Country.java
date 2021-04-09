@@ -17,7 +17,13 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class Country extends GraphViewUtilities {
 
+    //nazwy miast są unikalne
     private final List<City> cities=new ArrayList<>();
+    private final String name;
+
+    public Country(String name) {
+        this.name = name;
+    }
 
     public void addEdge(String vertexOneLabel, String vertexTwoLabel, double weight, double initialPheromone) throws CityNotExist,
             RedundantCityName, EdgeAlreadyExists {
@@ -31,8 +37,10 @@ public class Country extends GraphViewUtilities {
 
         Road road=new Road(weight, initialPheromone, vertexOneLabel + "-" + vertexTwoLabel);
 
-        vertexOne.get().addRoad(vertexTwo.get(), road);
-        vertexTwo.get().addRoad(vertexOne.get(), road);
+        synchronized (this) {
+            vertexOne.get().addRoad(vertexTwo.get(), road);
+            vertexTwo.get().addRoad(vertexOne.get(), road);
+        }
 
     }
 
@@ -57,14 +65,8 @@ public class Country extends GraphViewUtilities {
         return cityOne.getDirections().containsKey(cityTwo);
     }
 
-    public City getCity(String label) throws RedundantCityName { //TODO: nie powinno dodawać nowego wierzchołka
-        Optional<City> vertex=this.cities.stream().filter(city -> city.getName().equals(label)).findFirst();
-        if (vertex.isPresent()) return vertex.get();
-        return this.createCity(label);
-    }
-
-    public City getCity(Integer id) {
-        return this.getCities().get(id);
+    public Optional<City> getCity(String label) {
+        return this.cities.stream().filter(city -> city.getName().equals(label)).findFirst();
     }
 
     public Road getRoad(City city1, City city2) {
@@ -77,12 +79,14 @@ public class Country extends GraphViewUtilities {
         return this.getCities().size();
     }
 
-    public City createCity(String label) throws RedundantCityName {
-        if (this.vertexExists(label)) throw new RedundantCityName(label);
-
-        City city=new City(label);
-        this.cities.add(city);
-        return city;
+    public City createCity(String label) {
+        Optional<City> city1 = getCity(label);
+        if (city1.isPresent()) return city1.get();
+        else {
+            City city=new City(label);
+            this.cities.add(city);
+            return city;
+        }
     }
 
     @Override
@@ -97,8 +101,6 @@ public class Country extends GraphViewUtilities {
         ExecutorService executorService=Executors.newFixedThreadPool(12);
         this.initView();
 
-        log.info("Adding nodes to view...");
-
         for (City city : this.cities) {
             this.addCellToDraw(city);
         }
@@ -108,7 +110,7 @@ public class Country extends GraphViewUtilities {
                 this.addEdgeToDraw(roadCopy, city, cityCopy1);
             });
         }
-        log.info("Adding nodes to view completed");
+
         this.drawAddedNodes();
         executorService.submit(this::makeCellsDraggable);
 

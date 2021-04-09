@@ -35,7 +35,7 @@ public class ControlPanel extends VBox implements Controlling {
 
     @Override
     public Optional<Country> getGraphForProcessing() {
-        return Optional.of(this.selectedGraph);
+        return Optional.ofNullable(selectedGraph);
     }
 
     @Override
