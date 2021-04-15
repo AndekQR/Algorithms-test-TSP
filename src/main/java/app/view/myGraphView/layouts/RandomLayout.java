@@ -7,9 +7,7 @@ import app.view.myGraphView.DrawableCell;
 
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 
 public class RandomLayout extends Layout {

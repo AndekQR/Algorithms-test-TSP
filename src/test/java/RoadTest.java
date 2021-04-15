@@ -1,7 +1,6 @@
 import app.controller.graph.City;
 import app.controller.graph.Road;
 import app.view.myGraphView.DrawableEdge;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

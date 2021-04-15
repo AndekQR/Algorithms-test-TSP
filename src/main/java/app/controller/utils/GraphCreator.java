@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class GraphCreator {
 
-    ExecutorService executorService = Executors.newFixedThreadPool(6);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(6);
 
     public Country createFullGraph(int vertices, String name) {
 

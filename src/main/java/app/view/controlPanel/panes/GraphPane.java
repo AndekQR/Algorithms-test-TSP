@@ -5,6 +5,7 @@ import app.controller.utils.GraphCreator;
 import app.db.Database;
 import app.view.controlPanel.ControlPanel;
 import app.view.controlPanel.Controlling;
+import app.view.controlPanel.ProgressBarController;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -49,8 +50,10 @@ public class GraphPane extends VBox {
         listView.setOnMouseClicked(event -> {
             String selectedItem = listView.getSelectionModel().getSelectedItem();
             if (!selectedItem.isBlank()) {
+                controlPanel.showProgressBar();
                 Country graph = database.getGraph(selectedItem);
                 controlPanel.setGraphForProcessing(graph);
+                controlPanel.hideProgressBar();
             }
         });
         return listView;
@@ -128,8 +131,10 @@ public class GraphPane extends VBox {
             saveButton.setOnMouseClicked(event -> {
                 if (latestGeneratedGraph != null) {
                     listView.getItems().add(latestGeneratedGraph.getName());
+                    controlPanel.showProgressBar();
                     executor.submit(() -> {
                         database.saveGraph(latestGeneratedGraph);
+                        controlPanel.hideProgressBar();
                     });
                     noVerticesTextField.clear();
                     graphNameTextField.clear();

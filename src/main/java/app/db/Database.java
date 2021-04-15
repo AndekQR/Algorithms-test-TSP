@@ -4,16 +4,13 @@ import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.graph.RedundantCityName;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.neo4j.driver.*;
-import org.neo4j.driver.internal.types.InternalTypeSystem;
-import org.neo4j.driver.types.TypeSystem;
 import org.neo4j.driver.util.Pair;
 
 import java.util.*;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-
-import static org.neo4j.driver.internal.types.InternalTypeSystem.*;
 
 @Slf4j
 public class Database {
@@ -25,15 +22,16 @@ public class Database {
     }
 
     public boolean saveGraph(Country country) {
-        try(Session session = driver.session()) {
+        try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
-                for (City city : country.getCities()) { //TODO: tworzenie jako jeden query
+                for (City city : country.getCities()) {
                     String query = "CREATE (:Node {graphName: $graphName, name: $nodeName})";
                     Map<String, Object> parameters = new HashMap<>();
                     parameters.put("graphName", country.getName());
                     parameters.put("nodeName", city.getName());
                     tx.run(query, parameters);
                 }
+
                 Set<City> pathsCreated = new HashSet<>();
                 for (City origin : country.getCities()) {
                     pathsCreated.add(origin);
@@ -61,7 +59,7 @@ public class Database {
     }
 
     public Country getGraph(String name) {
-        try(Session session = driver.session()) {
+        try (Session session = driver.session()) {
             return session.writeTransaction(tx -> {
                 String query = "Match (n:Node {graphName: $graphName})-[r:PATH]->(m:Node {graphName: $graphName})\n" +
                         "Return n,r,m";
@@ -77,6 +75,7 @@ public class Database {
     /**
      * Record field:
      * origin - relation - destination
+     *
      * @param records - rekordy z bazy danych
      * @return graf stworzony na podstawie rekordów
      */
@@ -109,11 +108,11 @@ public class Database {
     }
 
     public List<String> getGraphsNames() {
-        try(Session session = driver.session()) {
+        try (Session session = driver.session()) {
             return session.writeTransaction(tx -> {
                 String query = "MATCH (n: Node) WHERE exists(n.graphName) WITH DISTINCT n.graphName as GN return GN";
                 Result result = tx.run(query);
-                 return result.list().stream().map(record -> {
+                return result.list().stream().map(record -> {
                     List<Pair<String, Value>> fields = record.fields();
                     Optional<Pair<String, Value>> first = fields.stream().findFirst();
                     if (first.isPresent()) {
@@ -121,7 +120,7 @@ public class Database {
                     }
                     return "";
                 }).filter(s -> !s.isBlank())
-                .collect(Collectors.toList());
+                        .collect(Collectors.toList());
             });
         }
     }

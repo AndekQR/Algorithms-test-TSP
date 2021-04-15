@@ -1,13 +1,8 @@
 package app.controller.graph;
 
 import app.controller.helpers.Helpers;
-import app.view.myGraphView.DrawableCell;
 import app.view.myGraphView.DrawableEdge;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.UUID;
 
 @Getter
 public class Road extends DrawableEdge {

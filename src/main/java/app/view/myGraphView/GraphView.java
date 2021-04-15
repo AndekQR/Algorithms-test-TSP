@@ -1,7 +1,6 @@
 package app.view.myGraphView;
 
 import app.Main;
-import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.view.controlPanel.ControlPanel;
 import app.view.myGraphView.layouts.EqualSpacesLayout;

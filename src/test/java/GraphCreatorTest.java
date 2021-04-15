@@ -2,7 +2,6 @@ import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.graph.Road;
 import app.controller.utils.GraphCreator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

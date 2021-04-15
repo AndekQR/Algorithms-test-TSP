@@ -1,10 +1,17 @@
 package app.view.controlPanel;
 
-import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.utils.AlgorithmsMediator;
 import app.view.myGraphView.GraphView;
+import javafx.application.Platform;
+import javafx.geometry.Pos;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
@@ -12,14 +19,15 @@ import java.util.Optional;
 @Slf4j
 public class ControlPanel extends VBox implements Controlling {
 
-    public static double WIDTH=250;
+    public static double WIDTH = 250;
 
-    private Country selectedGraph=null;
+    private Country selectedGraph = null;
     private GraphView graphView;
     private AlgorithmsMediator algorithmsMediator;
+    private boolean progressBarShowing = false;
 
     public ControlPanel(GraphView graphView) {
-        this.graphView=graphView;
+        this.graphView = graphView;
         this.algorithmsMediator = new AlgorithmsMediator();
         this.init();
 
@@ -28,9 +36,47 @@ public class ControlPanel extends VBox implements Controlling {
     private void init() {
         this.setPrefWidth(WIDTH);
         this.setStyle("-fx-background-color: #e0afa0");
+        this.setAlignment(Pos.TOP_CENTER);
 
-        AlgorithmsTabPane algorithmsTabPane=new AlgorithmsTabPane(this);
+        AlgorithmsTabPane algorithmsTabPane = new AlgorithmsTabPane(this);
         this.getChildren().add(algorithmsTabPane);
+
+    }
+
+    /**
+     * Wywoływać tylko z wątku JavaFX
+     */
+    @Override
+    public void showProgressBar() {
+        if (progressBarShowing) return;
+
+        progressBarShowing = true;
+
+        StackPane stackPane = new StackPane();
+        stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf("#94949B"), null, null)));
+        stackPane.setStyle("-fx-padding: 5px");
+
+        ImageView imageView = new ImageView();
+        Image image = new Image(this.getClass().getResource("../../../progress_bar.gif").toExternalForm());
+        imageView.setImage(image);
+        imageView.setFitWidth(ControlPanel.WIDTH - 50);
+        imageView.setFitHeight(40);
+
+        stackPane.getChildren().add(imageView);
+
+        this.getChildren().add(0, stackPane);
+
+    }
+
+
+    @Override
+    public void hideProgressBar() {
+        if (progressBarShowing) {
+            Platform.runLater(() -> {
+                this.getChildren().remove(0);
+                progressBarShowing = false;
+            });
+        }
     }
 
     @Override
@@ -40,7 +86,7 @@ public class ControlPanel extends VBox implements Controlling {
 
     @Override
     public void setGraphForProcessing(Country country) {
-        this.selectedGraph= country;
+        this.selectedGraph = country;
         graphView.setGraphToShow(this.selectedGraph);
     }
 }
