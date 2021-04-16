@@ -27,9 +27,24 @@ public class Country extends GraphViewUtilities {
     }
 
     public Country(Country country) {
-        this.cities = country.cities;
+        this.cities = new ArrayList<>();
         this.name = country.name;
+
+        for (City city: country.getCities()) {
+            this.createCity(city.getName());
+        }
+
+        for (City origin : country.getCities()) {
+            origin.getDirections().forEach((city, road) -> {
+                try {
+                    this.addEdge(origin.getName(), city.getName(), road.getDistance(), road.getPheromone());
+                } catch (CityNotExist | RedundantCityName | EdgeAlreadyExists cityNotExist) {
+
+                }
+            });
+        }
     }
+
 
     public void addEdge(String vertexOneLabel, String vertexTwoLabel, double weight, double initialPheromone) throws CityNotExist,
             RedundantCityName, EdgeAlreadyExists {

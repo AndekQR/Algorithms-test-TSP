@@ -8,6 +8,9 @@ import app.controller.graph.Road;
 import app.controller.utils.AlgorithmsMediator;
 import app.view.myGraphView.GraphView;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -27,15 +30,14 @@ public class ControlPanel extends VBox implements Controlling {
     public static double WIDTH = 250;
 
     private Country selectedGraph = null;
-    private GraphView graphView;
-    private AlgorithmsMediator algorithmsMediator;
-    private boolean progressBarShowing = false;
+    private final GraphView graphView;
+    private final AlgorithmsMediator algorithmsMediator;
+    private BooleanProperty progressBarShowing = new SimpleBooleanProperty(false);
 
     public ControlPanel(GraphView graphView) {
         this.graphView = graphView;
         this.algorithmsMediator = new AlgorithmsMediator();
         this.init();
-
     }
 
     private void init() {
@@ -53,9 +55,9 @@ public class ControlPanel extends VBox implements Controlling {
      */
     @Override
     public void showProgressBar() {
-        if (progressBarShowing) return;
+        if (progressBarShowing.get()) return;
 
-        progressBarShowing = true;
+        progressBarShowing.set(true);
 
         StackPane stackPane = new StackPane();
         stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf("#94949B"), null, null)));
@@ -76,17 +78,28 @@ public class ControlPanel extends VBox implements Controlling {
 
     @Override
     public void hideProgressBar() {
-        if (progressBarShowing) {
+        if (progressBarShowing.get()) {
             Platform.runLater(() -> {
                 this.getChildren().remove(0);
-                progressBarShowing = false;
+                progressBarShowing.set(false);
             });
         }
     }
 
     @Override
+    public BooleanProperty getProgressBarProperty() {
+        return progressBarShowing;
+    }
+
+    @Override
     public Optional<Country> getGraphForProcessing() {
         return Optional.ofNullable(selectedGraph);
+    }
+
+    private Optional<Country> getGraphForProcessingCopy() {
+        Optional<Country> graphForProcessing = getGraphForProcessing();
+        if (graphForProcessing.isEmpty()) return Optional.empty();
+        else return Optional.of(new Country(graphForProcessing.get()));
     }
 
     @Override
@@ -97,19 +110,24 @@ public class ControlPanel extends VBox implements Controlling {
 
     @Override
     public void solveByAco(AcoParameters parameters) {
-        if (getGraphForProcessing().isEmpty()|| parameters == null) return;
-        Country country = getGraphForProcessing().get();
+        Optional<Country> graphForProcessingCopy = getGraphForProcessingCopy();
+        if (graphForProcessingCopy.isEmpty()|| parameters == null) return;
+        Country copyCountry = graphForProcessingCopy.get();
+        graphView.setGraphToShow(copyCountry);
 
-        AcoResult acoResult = algorithmsMediator.solveByAcoAlgorithm(country, parameters);
+        AcoResult acoResult = algorithmsMediator.solveByAcoAlgorithm(copyCountry, parameters);
         List<City> cities = acoResult.getBestRoadAsCities(); //miast jest zawsze o jeden więcej od dróg, mrówka wraca
         // do początkowego miasta na końcu!!!!
         List<Road> roads = acoResult.getBestRoad();
-        Platform.runLater(() -> {
-            country.clearEdges();
-            for (int i = 0; i < roads.size(); i++) {
-                Road road = roads.get(i);
-                country.addEdgeToDraw(road, cities.get(i), cities.get(i+1));
-            }
-        });
+       if (!roads.isEmpty()) {
+           Platform.runLater(() -> {
+               cities.get(0).highlight();
+               for (int i = 0; i < roads.size(); i++) {
+                   Road road = roads.get(i);
+                   String text = i+1+"\n"+"Weight: " +road.getDistance() + "\n" + "Pheromone: " + road.getPheromone();
+                   copyCountry.addEdgeToDraw(road, cities.get(i), cities.get(i+1), text);
+               }
+           });
+       }
     }
 }

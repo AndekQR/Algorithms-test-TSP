@@ -2,6 +2,7 @@ package app.controller.graph;
 
 import app.view.myGraphView.DrawableCell;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -9,9 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @Slf4j
+@NoArgsConstructor
 public class City extends DrawableCell {
 
-    private final Map<City, Road> directions;
+    private  Map<City, Road> directions;
 
     public City(String cityName) {
         this.name=cityName;

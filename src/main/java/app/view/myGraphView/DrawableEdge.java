@@ -34,16 +34,13 @@ public abstract class DrawableEdge extends Group {
 
         initialized = true;
         getChildren().add(line);
-
-//        this.lineText=getTextLine();
-//        getChildren().add(lineText);
-//        updateLineText(distance, pheromone);
     }
 
-    public void addLineToView() {
-        if (initialized){
-            getChildren().add(line);
-        }
+
+    public void drawText(String text) {
+        this.lineText = getTextLine();
+        getChildren().add(lineText);
+        lineText.setText(text);
     }
 
     private void setListener() {
@@ -87,12 +84,6 @@ public abstract class DrawableEdge extends Group {
         Point2D diff=dir.multiply(DrawableCell.circleRadius);
         line.setEndX(target.getCenterX().get() + diff.getX());
         line.setEndY(target.getCenterY().get() + diff.getY());
-    }
-
-    public void updateLineText(Double distance, Double pheromone) {
-        if (lineText != null) {
-            this.lineText.setText("Weight: " + distance + "\n" + "Pheromone: " + pheromone);
-        }
     }
 
     public String getSourceName() {

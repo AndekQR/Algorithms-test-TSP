@@ -44,12 +44,11 @@ public abstract class GraphViewUtilities {
         this.addedCells.add(cell);
     }
 
-    public void addEdgeToDraw(Road edge, City city, City city1) {
+    public void addEdgeToDraw(Road edge, City city, City city1, String text) {
         if (!edge.isInitialized()) {
             edge.initLine(city, city1);
             edge.drawHighlightedLine();
-        } else {
-//            edge.addLineToView();
+            if (text != null && !text.isBlank()) edge.drawText(text);
         }
 
         this.addedEdges.add(edge);
@@ -97,19 +96,6 @@ public abstract class GraphViewUtilities {
         for (DrawableCell addedCell : this.addedCells) {
             this.mouseGestures.makeDraggable(addedCell);
         }
-    }
-
-    public void clearEdges() {
-        for (DrawableEdge addedEdge : addedEdges) {
-            addedEdge.getChildren().clear();
-        }
-        cellLayer.getChildren().removeAll(addedEdges);
-        cellLayer.getChildren().stream().forEach(node -> {
-            if (node instanceof DrawableEdge) {
-
-            }
-        });
-        addedEdges.clear();
     }
 
 }

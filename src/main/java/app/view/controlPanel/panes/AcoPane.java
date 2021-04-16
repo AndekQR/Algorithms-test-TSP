@@ -24,13 +24,14 @@ public class AcoPane extends VBox {
     private double evaporation = 0.1;
     private int ants = 100;
     private int generations = 100;
-    private final Button solveButton = getSolveButton();
+    private final Button solveButton;
 
     public AcoPane(Controlling controlPanel) {
         this.controlPanel = controlPanel;
 
         setSpacing(5);
 
+        solveButton = getSolveButton();
         Node alphaControl = getAlphaControl();
         Node betaControl = getBetaControl();
         Node evaporationControl = getEvaporationControl();
@@ -43,6 +44,10 @@ public class AcoPane extends VBox {
 
     private Button getSolveButton() {
         Button button = new Button();
+        controlPanel.getProgressBarProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) button.setDisable(true);
+            else button.setDisable(false);
+        });
         button.setText("Solve");
         button.setPrefWidth(ControlPanel.WIDTH);
         button.setOnMouseClicked(event -> {

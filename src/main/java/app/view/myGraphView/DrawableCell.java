@@ -1,12 +1,14 @@
 package app.view.myGraphView;
 
 import javafx.beans.binding.DoubleBinding;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -23,18 +25,27 @@ public abstract class DrawableCell extends Pane {
     private DoubleBinding centerX;
     @Getter
     private DoubleBinding centerY;
+    private Circle circle;
 
     protected void initView(){
         StackPane stackPane=new StackPane();
-        stackPane.getChildren().addAll(getCircleNode(), getTextNode());
+        this.circle = getCircleNode();
+        stackPane.getChildren().addAll(circle, getTextNode());
+        stackPane.setAlignment(Pos.CENTER);
         setView(stackPane);
 
         this.centerX = getCenterXBinding();
         this.centerY = getCenterYBinding();
     }
 
+    public void highlight() {
+        circle.setStroke(Color.rgb(230, 57, 70, 0.5));
+        circle.setStrokeWidth(3);
+    }
+
     private Text getTextNode() {
         Text text=new Text(name);
+        text.setTextAlignment(TextAlignment.CENTER);
         text.setWrappingWidth(circleRadius);
         text.setStyle("-fx-font-size: 10");
         text.setStyle("-fx-font-family: 'Trebuchet MS'");
