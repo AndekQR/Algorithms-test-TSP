@@ -11,89 +11,90 @@ import java.util.stream.IntStream;
 public class AcoAlgorithm {
 
     private final Country country;
-
-    private final Random random=new Random();
-
-    private final Collection<Ant> ants=new ArrayList<>();
-
-    private List<Road> bestRoad;
+    private final Random random = new Random();
+    private final Collection<Ant> ants = new ArrayList<>();
+    private AcoParameters acoParameters;
     private Ant bestAnt;
 
-    public AcoAlgorithm(Country country) {
-        this.country=country;
+    public AcoAlgorithm(Country country, AcoParameters acoParameters) {
+        this.country = country;
+        this.acoParameters = acoParameters;
     }
 
-    public void solve() {
-        IntStream.range(0, AcoParameters.generations).forEach(i -> {
+    public AcoResult solve() {
+        IntStream.range(0, acoParameters.getGenerations()).forEach(i -> {
             this.initAnts();
-            for (int i1=0; i1 < this.country.getCities().size(); i1++) {
+            for (int i1 = 0; i1 < this.country.getCities().size(); i1++) {
                 this.moveAnts();
                 this.updateRoads();
-                this.updateBestRoad();
+                this.updateBestAnt();
             }
         });
-        this.bestAnt.getVisitedCities().forEach(System.out::println);
+        return new AcoResult(getBestRoad(), getBestRoadAsCities());
+    }
+
+    private List<City> getBestRoadAsCities() {
+        return bestAnt.getVisitedCities();
+    }
+
+    private List<Road> getBestRoad() {
+        return bestAnt.getVisitedRoads();
     }
 
     private void updateRoads() {
         for (City city : this.country.getCities()) {
-            city.getDirections().forEach((cityCopy1, roadCopy) -> roadCopy.evaporatePheromones(AcoParameters.evaporation));
+            city.getDirections().forEach((cityCopy1, roadCopy) -> roadCopy.evaporatePheromones(acoParameters.getEvaporation()));
         }
-        this.ants.forEach(ant -> ant.getLastTakenRoad().addPheromone(AcoParameters.q / ant.getTrailWeight()));
+        this.ants.forEach(ant -> {
+            Double trailWeight = ant.getTrailWeight();
+            if (Double.compare(trailWeight, 0) == 0) ant.getLastTakenRoad().addPheromone(acoParameters.getQ());
+            else ant.getLastTakenRoad().addPheromone(acoParameters.getQ() / ant.getTrailWeight());
+        });
     }
 
-    private void updateBestRoad() {
-        this.bestAnt=this.ants.stream().sorted(Comparator.comparingDouble(Ant::getTrailWeight)).findFirst().get();
-        this.bestRoad=this.bestAnt.getVisitedRoads();
+    private void updateBestAnt() {
+        this.bestAnt = this.ants.stream().sorted(Comparator.comparingDouble(Ant::getTrailWeight)).findFirst().get();
     }
 
     private void moveAnts() {
         this.ants.forEach(ant -> {
-            boolean visitedRandomCity=false;
+            boolean visitedRandomCity = false;
 
-            if (this.random.nextDouble() < AcoParameters.randomFactor) {
-                int cityIndex=this.random.nextInt(this.country.countrySize() - 1); //TODO: może być problem z countrySIze
-                City randomCity=this.country.getCities().get(cityIndex);
+            if (this.random.nextDouble() < acoParameters.getRandomFactor()) {
+                int cityIndex = this.random.nextInt(this.country.countrySize() - 1); //TODO: może być problem z countrySIze
+                City randomCity = this.country.getCities().get(cityIndex);
 
                 if (ant.isVisitPossible(randomCity)) {
                     ant.visitCity(randomCity);
-                    visitedRandomCity=true;
+                    visitedRandomCity = true;
                 }
             }
 
             if (!visitedRandomCity) {
-                Map<City, Double> cityProbabilityMap=ant.getUnvisitedCities().stream()
-                        .filter(city -> ant.isVisitPossible(city))
+                Map<City, Double> cityProbabilityMap = ant.getUnvisitedCities().stream()
+                        .filter(ant::isVisitPossible)
                         .collect(Collectors.toMap(
                                 city -> city,
                                 city -> this.calculateProbability(ant, city)
                         ));
 
                 if (!cityProbabilityMap.isEmpty()) {
-                    Optional<Map.Entry<City, Double>> first=
+                    Optional<Map.Entry<City, Double>> first =
                             cityProbabilityMap.entrySet().stream().max(Comparator.comparingDouble(Map.Entry::getValue));
-//                    Optional<Map.Entry<City, Double>> first=cityProbabilityMap.entrySet().stream().sorted(
-//                            (Map.Entry<City, Double> c1, Map.Entry<City,
-//                            Double> c2) -> (c2.getValue() > c1.getValue() ? 1 :
-//                            (c1.getValue() < c2.getValue() ? -1 : 0))).findFirst();
-                    if (first.isPresent()) {
-                        ant.visitCity(first.get().getKey());
-                    } else {
-                        throw new RuntimeException("Cant visit any city");
-                    }
+                    ant.visitCity(first.get().getKey());
                 }
             }
         });
     }
 
     private Double calculateProbability(Ant ant, City city) {
-        City antCurrentCity=ant.getCurrentCity();
-        Optional<Road> road=this.getRoad(city, antCurrentCity);
+        City antCurrentCity = ant.getCurrentCity();
+        Optional<Road> road = this.getRoad(city, antCurrentCity);
         if (road.isPresent()) {
-            Double visibility=1 / road.get().getDistance();
-            Double intensity=road.get().getPheromone();
+            Double visibility = 1 / road.get().getDistance();
+            Double intensity = road.get().getPheromone();
 
-            return Math.pow(visibility, AcoParameters.beta) * Math.pow(intensity, AcoParameters.alpha);
+            return Math.pow(visibility, acoParameters.getBeta()) * Math.pow(intensity, acoParameters.getAlpha());
         }
         return 0.0;
     }
@@ -104,10 +105,10 @@ public class AcoAlgorithm {
     }
 
     private void initAnts() {
-        List<City> cityList=this.country.getCities();
-        IntStream.range(0, AcoParameters.ants).forEach(i -> {
-            City randomCity=cityList.get(this.random.nextInt(cityList.size() - 1));
-            Ant ant=new Ant(randomCity, cityList);
+        List<City> cityList = this.country.getCities();
+        IntStream.range(0, acoParameters.getAnts()).forEach(i -> {
+            City randomCity = cityList.get(this.random.nextInt(cityList.size() - 1));
+            Ant ant = new Ant(randomCity, cityList);
             this.ants.add(ant);
         });
     }

@@ -24,17 +24,17 @@ public abstract class GraphViewUtilities {
     private Set<DrawableEdge> addedEdges;
 
     public void initView() {
-        this.addedCells=Collections.synchronizedSet(new HashSet<>());
-        this.addedEdges=Collections.synchronizedSet(new HashSet<>());
+        this.addedCells = Collections.synchronizedSet(new HashSet<>());
+        this.addedEdges = Collections.synchronizedSet(new HashSet<>());
 
-        this.mouseGestures=new MouseGestures(this);
+        this.mouseGestures = new MouseGestures(this);
 
 
-        Group canvas=new Group();
-        cellLayer=new CellLayer();
+        Group canvas = new Group();
+        cellLayer = new CellLayer();
         canvas.getChildren().add(cellLayer);
 
-        rootScrollPane=new ZoomableScrollPane(cellLayer);
+        rootScrollPane = new ZoomableScrollPane(cellLayer);
         rootScrollPane.setFitToWidth(true);
         rootScrollPane.setFitToHeight(true);
 
@@ -45,19 +45,16 @@ public abstract class GraphViewUtilities {
     }
 
     public void addEdgeToDraw(Road edge, City city, City city1) {
-        //hashcode może być inne ze względu na odwrócony source i target
-//        if (!alreadyExists(city, city1)) {
-////            System.out.println(edge);
-//            edge.initLineDraw(city, city1, edge.getDistance(), edge.getPheromone());
-//            this.addedEdges.add(edge);
-////            System.out.println("Dodane: "+city.getName()+" to "+city1.getName());
-//
-//        }
-//        if (!this.addedEdges.contains(edge)) {
-//            edge.initLineDraw(city, city1, edge.getDistance(), edge.getPheromone());
-            this.addedEdges.add(edge);
+        if (!edge.isInitialized()) {
+            edge.initLine(city, city1);
+            edge.drawHighlightedLine();
+        } else {
+//            edge.addLineToView();
+        }
 
-//        }
+        this.addedEdges.add(edge);
+        this.cellLayer.getChildren().add(edge);
+
     }
 
     /**
@@ -68,8 +65,8 @@ public abstract class GraphViewUtilities {
      */
     private boolean alreadyExists(City one, City two) {
         return this.addedEdges.stream().anyMatch(addedEdge -> {
-            String sourceName=addedEdge.getSourceName();
-            String targetName=addedEdge.getTargetName();
+            String sourceName = addedEdge.getSourceName();
+            String targetName = addedEdge.getTargetName();
             if (one.getName().equals(sourceName) && two.getName().equals(targetName))
                 return true;
             if (one.getName().equals(targetName) && two.getName().equals(sourceName))
@@ -83,11 +80,11 @@ public abstract class GraphViewUtilities {
     }
 
     protected void drawAddedNodes() {
-        log.info("Number of edges in view: " + this.addedEdges.size());
-        log.info("Number of vertices in view: " + this.addedCells.size());
-        if (((addedCells.size() * (addedCells.size() - 1)) / 2) != addedEdges.size()) {
-            log.error("Wrong number of edges added to view!");
-        }
+//        log.info("Number of edges in view: " + this.addedEdges.size());
+//        log.info("Number of vertices in view: " + this.addedCells.size());
+//        if (((addedCells.size() * (addedCells.size() - 1)) / 2) != addedEdges.size()) {
+//            log.error("Wrong number of edges added to view!");
+//        }
 
         this.cellLayer.getChildren().addAll(this.addedCells);
 //        this.cellLayer.getChildren().addAll(this.addedEdges);
@@ -100,6 +97,19 @@ public abstract class GraphViewUtilities {
         for (DrawableCell addedCell : this.addedCells) {
             this.mouseGestures.makeDraggable(addedCell);
         }
+    }
+
+    public void clearEdges() {
+        for (DrawableEdge addedEdge : addedEdges) {
+            addedEdge.getChildren().clear();
+        }
+        cellLayer.getChildren().removeAll(addedEdges);
+        cellLayer.getChildren().stream().forEach(node -> {
+            if (node instanceof DrawableEdge) {
+
+            }
+        });
+        addedEdges.clear();
     }
 
 }

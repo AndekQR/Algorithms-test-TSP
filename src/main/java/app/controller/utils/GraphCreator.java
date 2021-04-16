@@ -36,7 +36,7 @@ public class GraphCreator {
                     for (City city1 : cities) {
                         try {
                             country.addEdge(city, city1, Helpers.getRandomNumber(0, 50),
-                                    Helpers.getRandomNumber(0, 50));
+                                    Helpers.getRandomNumber(0, 15));
                         } catch (RedundantCityName ignored) {
 //                            log.info(ignored.getLocalizedMessage());
                         }

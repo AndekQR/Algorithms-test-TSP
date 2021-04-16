@@ -8,6 +8,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @EqualsAndHashCode(callSuper=false)
@@ -31,11 +32,18 @@ public abstract class DrawableEdge extends Group {
 
         setListener();
 
+        initialized = true;
         getChildren().add(line);
 
 //        this.lineText=getTextLine();
 //        getChildren().add(lineText);
 //        updateLineText(distance, pheromone);
+    }
+
+    public void addLineToView() {
+        if (initialized){
+            getChildren().add(line);
+        }
     }
 
     private void setListener() {

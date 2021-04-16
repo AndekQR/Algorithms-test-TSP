@@ -50,7 +50,6 @@ public class Ant {
     }
 
     private Optional<Road> getRoad(City city1, City city2) {
-//        return city1.getRoads().stream().filter(roadElement -> roadElement.getDirection().equals(city2)).findFirst();
         return Optional.ofNullable(city1.getDirections().get(city2));
     }
 

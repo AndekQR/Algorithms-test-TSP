@@ -20,7 +20,6 @@ public class Road extends DrawableEdge {
     public Double addPheromone(Double pheromones) {
         double newValue=pheromones + this.pheromone;
         double rounded=Helpers.round(newValue, 2);
-//        setPheromone(rounded);
         this.pheromone = rounded;
         return rounded;
     }
@@ -28,7 +27,6 @@ public class Road extends DrawableEdge {
     public Double evaporatePheromones(Double evaporationRate) {
         double newValue=this.pheromone * evaporationRate;
         double rounded=Helpers.round(newValue, 2);
-//        this.setPheromone(rounded);
         this.pheromone = rounded;
         return rounded;
     }

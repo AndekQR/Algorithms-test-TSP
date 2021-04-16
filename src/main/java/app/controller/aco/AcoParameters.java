@@ -1,17 +1,23 @@
 package app.controller.aco;
 
+import lombok.*;
+
+@Builder
+@Getter
+@ToString
 public class AcoParameters {
     // Impact of pheromones on decision making.
-    static double alpha=1;
+     private double alpha=1;
     // Impact of distance on decision making.
-    static double beta=5;
+    private double beta=5;
     // Evaporation rate of pheromones.
-    static double evaporation=0.1;
+    private double evaporation=0.1;
     // Number of ants to run per generation.
-    static int ants=100;
+    private  int ants=100;
     // Number of generations.
-    static int generations=100;
+    private int generations=100;
 
-    static double randomFactor=0.01;
-    static double q=500;
+    private final double randomFactor=0.01;
+    private final double q=5;
+
 }

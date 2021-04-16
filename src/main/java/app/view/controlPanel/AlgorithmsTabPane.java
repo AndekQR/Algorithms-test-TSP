@@ -20,7 +20,7 @@ public class AlgorithmsTabPane extends Accordion {
 
     private void initTabs() {
         TitledPane graphTab = new TitledPane(this.graphCreationPaneName, new GraphPane(controlPanel));
-        TitledPane acoTab = new TitledPane(this.acoName, new AcoPane());
+        TitledPane acoTab = new TitledPane(this.acoName, new AcoPane(controlPanel));
         TitledPane tabuTab = new TitledPane(this.tabuName, new TabuPane());
         TitledPane aSTab = new TitledPane(this.simulatingAnnealingName, new SAPane());
         TitledPane nNaTab = new TitledPane(this.nearestNeighbourAlgorithmName, new NNAPane());

@@ -5,6 +5,7 @@ import app.controller.graph.Country;
 import app.view.controlPanel.ControlPanel;
 import app.view.myGraphView.layouts.EqualSpacesLayout;
 import app.view.myGraphView.layouts.Layout;
+import javafx.application.Platform;
 import javafx.scene.layout.BorderPane;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,12 @@ public class GraphView extends BorderPane {
         this.displayedGraph=country;
 
         if (this.displayedGraph != null) {
-            this.setCenter(this.displayedGraph.getView());
-            Layout layout=new EqualSpacesLayout(displayedGraph);
-            layout.execute();
+            Platform.runLater(() -> {
+                this.getChildren().clear();
+                this.setCenter(this.displayedGraph.getView());
+                Layout layout=new EqualSpacesLayout(displayedGraph);
+                layout.execute();
+            });
         }
     }
 }

@@ -5,6 +5,7 @@ import app.controller.graph.Country;
 import app.controller.graph.RedundantCityName;
 import lombok.extern.slf4j.Slf4j;
 import org.neo4j.driver.*;
+import org.neo4j.driver.exceptions.ServiceUnavailableException;
 import org.neo4j.driver.util.Pair;
 
 import java.util.*;

@@ -1,6 +1,10 @@
 package app.view.controlPanel;
 
+import app.controller.aco.AcoParameters;
+import app.controller.aco.AcoResult;
+import app.controller.graph.City;
 import app.controller.graph.Country;
+import app.controller.graph.Road;
 import app.controller.utils.AlgorithmsMediator;
 import app.view.myGraphView.GraphView;
 import javafx.application.Platform;
@@ -14,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -88,5 +93,23 @@ public class ControlPanel extends VBox implements Controlling {
     public void setGraphForProcessing(Country country) {
         this.selectedGraph = country;
         graphView.setGraphToShow(this.selectedGraph);
+    }
+
+    @Override
+    public void solveByAco(AcoParameters parameters) {
+        if (getGraphForProcessing().isEmpty()|| parameters == null) return;
+        Country country = getGraphForProcessing().get();
+
+        AcoResult acoResult = algorithmsMediator.solveByAcoAlgorithm(country, parameters);
+        List<City> cities = acoResult.getBestRoadAsCities(); //miast jest zawsze o jeden więcej od dróg, mrówka wraca
+        // do początkowego miasta na końcu!!!!
+        List<Road> roads = acoResult.getBestRoad();
+        Platform.runLater(() -> {
+            country.clearEdges();
+            for (int i = 0; i < roads.size(); i++) {
+                Road road = roads.get(i);
+                country.addEdgeToDraw(road, cities.get(i), cities.get(i+1));
+            }
+        });
     }
 }

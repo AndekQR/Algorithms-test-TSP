@@ -49,7 +49,7 @@ public class GraphPane extends VBox {
 
         listView.setOnMouseClicked(event -> {
             String selectedItem = listView.getSelectionModel().getSelectedItem();
-            if (!selectedItem.isBlank()) {
+            if (selectedItem != null && !selectedItem.isBlank()) {
                 controlPanel.showProgressBar();
                 Country graph = database.getGraph(selectedItem);
                 controlPanel.setGraphForProcessing(graph);

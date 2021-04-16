@@ -18,11 +18,17 @@ import java.util.concurrent.Executors;
 public class Country extends GraphViewUtilities {
 
     //nazwy miast są unikalne
-    private final List<City> cities=new ArrayList<>();
+    private final List<City> cities;
     private final String name;
 
     public Country(String name) {
+        this.cities = new ArrayList<>();
         this.name = name;
+    }
+
+    public Country(Country country) {
+        this.cities = country.cities;
+        this.name = country.name;
     }
 
     public void addEdge(String vertexOneLabel, String vertexTwoLabel, double weight, double initialPheromone) throws CityNotExist,
@@ -103,12 +109,6 @@ public class Country extends GraphViewUtilities {
 
         for (City city : this.cities) {
             this.addCellToDraw(city);
-        }
-
-        for (City city : this.cities) {
-            city.getDirections().forEach((cityCopy1, roadCopy) -> {
-                this.addEdgeToDraw(roadCopy, city, cityCopy1);
-            });
         }
 
         this.drawAddedNodes();
