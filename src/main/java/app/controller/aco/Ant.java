@@ -18,33 +18,32 @@ public class Ant {
     private City currentCity;
     private final City initialCity;
     private Road lastTakenRoad;
+    private Double currentRoadsWeight =0.0;
+
 
     private final List<Road> visitedRoads=new LinkedList<>();
     private final List<City> visitedCities=new LinkedList<>();
     private final List<City> unvisitedCities=new LinkedList<>();
 
-    private Double trailWeight=0.0;
 
     public Ant(City initialCity, Collection<City> cities) {
         this.currentCity=initialCity;
         this.initialCity=initialCity;
         this.visitedCities.add(initialCity);
-
         this.unvisitedCities.addAll(cities);
     }
 
     public void visitCity(City city) {
         Optional<Road> optionalRoad=this.getRoad(currentCity, city);
 
-        optionalRoad.ifPresentOrElse(road -> {
-            this.trailWeight+=road.getDistance();
+        optionalRoad.ifPresent(road -> {
+            this.currentRoadsWeight +=road.getDistance();
             this.visitedRoads.add(road);
 
             this.currentCity=city;
             this.lastTakenRoad=road;
             this.unvisitedCities.remove(city);
             this.visitedCities.add(city);
-        }, () -> {
         });
 
     }
@@ -54,10 +53,13 @@ public class Ant {
     }
 
     public boolean isVisitPossible(City city) {
-        if (!city.equals(initialCity)) {
-            return this.unvisitedCities.contains(city) && this.getRoad(currentCity, city).isPresent();
-        } else {
-            return this.unvisitedCities.size() == 1 && !this.currentCity.equals(city);
-        }
+        if (!visitedCities.contains(city) && getRoad(currentCity, city).isPresent()) return true;
+        return false;
+
+//        if (!city.equals(initialCity)) {
+//            return this.unvisitedCities.contains(city) && this.getRoad(currentCity, city).isPresent();
+//        } else {
+//            return this.unvisitedCities.size() == 1 && !this.currentCity.equals(city);
+//        }
     }
 }

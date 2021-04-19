@@ -90,10 +90,16 @@ public class Country extends GraphViewUtilities {
         return this.cities.stream().filter(city -> city.getName().equals(label)).findFirst();
     }
 
-    public Road getRoad(City city1, City city2) {
-        Road road=city1.getDirections().get(city2);
-        if (road == null) throw new RuntimeException("Road does not exists");
-        return road;
+    public Optional<Road> getRoad(City city1, City city2) {
+        return Optional.ofNullable(city1.getDirections().get(city2));
+    }
+
+    public Optional<Road> getRoad(String cityOne, String cityTwo) {
+        Optional<City> city = getCity(cityOne);
+        Optional<City> city1 = getCity(cityTwo);
+
+        if (city.isPresent() && city1.isPresent()) return getRoad(city.get(), city1.get());
+        else return Optional.empty();
     }
 
     public Integer countrySize() {

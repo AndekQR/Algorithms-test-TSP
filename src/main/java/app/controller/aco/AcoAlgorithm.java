@@ -46,14 +46,14 @@ public class AcoAlgorithm {
             city.getDirections().forEach((cityCopy1, roadCopy) -> roadCopy.evaporatePheromones(acoParameters.getEvaporation()));
         }
         this.ants.forEach(ant -> {
-            Double trailWeight = ant.getTrailWeight();
-            if (Double.compare(trailWeight, 0) == 0) ant.getLastTakenRoad().addPheromone(acoParameters.getQ());
-            else ant.getLastTakenRoad().addPheromone(acoParameters.getQ() / ant.getTrailWeight());
+            double currentRoadWeight = ant.getCurrentRoadsWeight();
+            if (Double.compare(currentRoadWeight, 0) == 0) ant.getLastTakenRoad().addPheromone(acoParameters.getQ());
+            else ant.getLastTakenRoad().addPheromone(acoParameters.getQ() / ant.getCurrentRoadsWeight());
         });
     }
 
     private void updateBestAnt() {
-        this.bestAnt = this.ants.stream().sorted(Comparator.comparingDouble(Ant::getTrailWeight)).findFirst().get();
+        this.bestAnt = this.ants.stream().sorted(Comparator.comparingDouble(Ant::getCurrentRoadsWeight)).findFirst().get();
     }
 
     private void moveAnts() {
@@ -79,9 +79,9 @@ public class AcoAlgorithm {
                         ));
 
                 if (!cityProbabilityMap.isEmpty()) {
-                    Optional<Map.Entry<City, Double>> first =
+                    Optional<Map.Entry<City, Double>> highestProbability =
                             cityProbabilityMap.entrySet().stream().max(Comparator.comparingDouble(Map.Entry::getValue));
-                    ant.visitCity(first.get().getKey());
+                    ant.visitCity(highestProbability.get().getKey());
                 }
             }
         });
@@ -91,16 +91,14 @@ public class AcoAlgorithm {
         City antCurrentCity = ant.getCurrentCity();
         Optional<Road> road = this.getRoad(city, antCurrentCity);
         if (road.isPresent()) {
-            Double visibility = 1 / road.get().getDistance();
-            Double intensity = road.get().getPheromone();
-
+            double visibility = 1 / road.get().getDistance();
+            double intensity = road.get().getPheromone();
             return Math.pow(visibility, acoParameters.getBeta()) * Math.pow(intensity, acoParameters.getAlpha());
         }
         return 0.0;
     }
 
     private Optional<Road> getRoad(City city1, City city2) {
-//        return city1.getRoads().stream().filter(roadElement -> roadElement.getDirection().equals(city2)).findFirst();
         return Optional.ofNullable(city1.getDirections().get(city2));
     }
 

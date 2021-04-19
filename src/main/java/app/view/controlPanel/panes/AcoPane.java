@@ -22,8 +22,8 @@ public class AcoPane extends VBox {
     private double alpha = 1;
     private double beta = 5;
     private double evaporation = 0.1;
-    private int ants = 100;
-    private int generations = 100;
+    private int ants = 10;
+    private int generations = 10;
     private final Button solveButton;
 
     public AcoPane(Controlling controlPanel) {
@@ -138,11 +138,11 @@ public class AcoPane extends VBox {
     private Node getAntsControl() {
         VBox vBox = new VBox();
 
-        TextField antsNumberTextField = new TextField("100");
+        TextField antsNumberTextField = new TextField(ants+"");
         antsNumberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 this.ants = Integer.parseInt(newValue);
-                solveButton.setDisable(false);
+                if (ants > 0) solveButton.setDisable(false);
             } catch (NumberFormatException exception) {
                 solveButton.setDisable(true);
             }
@@ -158,11 +158,11 @@ public class AcoPane extends VBox {
     private Node getGenerationsControl() {
         VBox vBox = new VBox();
 
-        TextField generationNumberTextField = new TextField("100");
+        TextField generationNumberTextField = new TextField(generations+"");
         generationNumberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 this.generations = Integer.parseInt(newValue);
-                solveButton.setDisable(false);
+                if (generations > 0) solveButton.setDisable(false);
             } catch (NumberFormatException exception) {
                 solveButton.setDisable(true);
             }

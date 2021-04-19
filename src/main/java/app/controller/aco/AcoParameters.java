@@ -18,6 +18,6 @@ public class AcoParameters {
     private int generations=100;
 
     private final double randomFactor=0.01;
-    private final double q=5;
+    private final double q=500;
 
 }

@@ -26,9 +26,13 @@ public abstract class DrawableCell extends Pane {
     @Getter
     private DoubleBinding centerY;
     private Circle circle;
+    private SelectingController selectingController = null;
+    private boolean selected;
+    private StackPane stackPane;
+    private Circle selectingCircle;
 
     protected void initView(){
-        StackPane stackPane=new StackPane();
+        stackPane=new StackPane();
         this.circle = getCircleNode();
         stackPane.getChildren().addAll(circle, getTextNode());
         stackPane.setAlignment(Pos.CENTER);
@@ -36,7 +40,38 @@ public abstract class DrawableCell extends Pane {
 
         this.centerX = getCenterXBinding();
         this.centerY = getCenterYBinding();
+
+        stackPane.setOnMouseClicked(event -> {
+            if (selectingController != null) {
+                if (selected) {
+                    unSelect();
+                } else {
+                    select();
+                }
+            }
+        });
     }
+
+    private void select() {
+        this.selected = true;
+        selectingController.select(this);
+        selectingCircle=new Circle(circleRadius-3);
+        selectingCircle.setStroke(Color.valueOf("#457b9d"));
+        selectingCircle.setStrokeWidth(3);
+        selectingCircle.setFill(new Color(0,0,0,0));
+        stackPane.getChildren().add(selectingCircle);
+    }
+
+    public void unSelect() {
+        this.selected = false;
+        selectingController.unSelect(this);
+        stackPane.getChildren().remove(selectingCircle);
+    }
+
+    public void initSelecting(SelectingController selectingController){
+        this.selectingController = selectingController;
+    }
+
 
     public void highlight() {
         circle.setStroke(Color.rgb(230, 57, 70, 0.5));

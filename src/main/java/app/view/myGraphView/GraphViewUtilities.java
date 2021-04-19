@@ -2,6 +2,7 @@ package app.view.myGraphView;
 
 import app.controller.graph.City;
 import app.controller.graph.Road;
+import app.controller.helpers.LineType;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import lombok.AccessLevel;
@@ -44,12 +45,22 @@ public abstract class GraphViewUtilities {
         this.addedCells.add(cell);
     }
 
-    public void addEdgeToDraw(Road edge, City city, City city1, String text) {
+    public void addEdgeToDraw(Road edge, DrawableCell city, DrawableCell city1, String text, LineType type) {
         if (!edge.isInitialized()) {
             edge.initLine(city, city1);
-            edge.drawHighlightedLine();
+            switch (type){
+                case NORMAL:
+                    if (edge.isHighlighted()) return;
+                    edge.drawNormalLine();
+                    break;
+                case HIGHLIGHTED:
+                    edge.drawHighlightedLine();
+                    break;
+            }
             if (text != null && !text.isBlank()) edge.drawText(text);
         }
+
+        if (addedEdges.contains(edge)) return;
 
         this.addedEdges.add(edge);
         this.cellLayer.getChildren().add(edge);

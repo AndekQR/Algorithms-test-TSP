@@ -19,6 +19,7 @@ public abstract class DrawableEdge extends Group {
     private Line line;
     private Text lineText;
     private boolean initialized;
+    private boolean highlighted = false;
 
 
     public void initLine(DrawableCell source, DrawableCell target) {
@@ -28,7 +29,6 @@ public abstract class DrawableEdge extends Group {
 
         line=new Line();
         line.setStrokeWidth(3.0);
-//        line.setStroke(Color.rgb(189, 185, 178, 0.2));
 
         setListener();
 
@@ -96,7 +96,20 @@ public abstract class DrawableEdge extends Group {
 
 
     public void drawHighlightedLine() {
+        highlighted = true;
         this.line.setStroke(Color.rgb(230, 57, 70, 0.5));
+    }
+
+    public void drawNormalLine() {
+        line.setStroke(Color.rgb(189, 185, 178, 0.2));
+    }
+
+    public void removeNormalLine() {
+        if (!highlighted) {
+            this.getChildren().remove(line);
+            this.getChildren().remove(lineText);
+            initialized = false;
+        }
     }
 
     @Override
