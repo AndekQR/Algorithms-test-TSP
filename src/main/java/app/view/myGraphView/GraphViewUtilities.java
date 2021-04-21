@@ -48,7 +48,7 @@ public abstract class GraphViewUtilities {
     public void addEdgeToDraw(Road edge, DrawableCell city, DrawableCell city1, String text, LineType type) {
         if (!edge.isInitialized()) {
             edge.initLine(city, city1);
-            switch (type){
+            switch (type) {
                 case NORMAL:
                     if (edge.isHighlighted()) return;
                     edge.drawNormalLine();
@@ -79,9 +79,7 @@ public abstract class GraphViewUtilities {
             String targetName = addedEdge.getTargetName();
             if (one.getName().equals(sourceName) && two.getName().equals(targetName))
                 return true;
-            if (one.getName().equals(targetName) && two.getName().equals(sourceName))
-                return true;
-            return false;
+            return one.getName().equals(targetName) && two.getName().equals(sourceName);
         });
     }
 

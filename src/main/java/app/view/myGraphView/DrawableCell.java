@@ -12,7 +12,7 @@ import javafx.scene.text.TextAlignment;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public abstract class DrawableCell extends Pane {
 
     public static final double circleRadius = 40;
@@ -31,8 +31,8 @@ public abstract class DrawableCell extends Pane {
     private StackPane stackPane;
     private Circle selectingCircle;
 
-    protected void initView(){
-        stackPane=new StackPane();
+    protected void initView() {
+        stackPane = new StackPane();
         this.circle = getCircleNode();
         stackPane.getChildren().addAll(circle, getTextNode());
         stackPane.setAlignment(Pos.CENTER);
@@ -55,10 +55,10 @@ public abstract class DrawableCell extends Pane {
     private void select() {
         this.selected = true;
         selectingController.select(this);
-        selectingCircle=new Circle(circleRadius-3);
+        selectingCircle = new Circle(circleRadius - 3);
         selectingCircle.setStroke(Color.valueOf("#457b9d"));
         selectingCircle.setStrokeWidth(3);
-        selectingCircle.setFill(new Color(0,0,0,0));
+        selectingCircle.setFill(new Color(0, 0, 0, 0));
         stackPane.getChildren().add(selectingCircle);
     }
 
@@ -68,7 +68,7 @@ public abstract class DrawableCell extends Pane {
         stackPane.getChildren().remove(selectingCircle);
     }
 
-    public void initSelecting(SelectingController selectingController){
+    public void initSelecting(SelectingController selectingController) {
         this.selectingController = selectingController;
     }
 
@@ -79,7 +79,7 @@ public abstract class DrawableCell extends Pane {
     }
 
     private Text getTextNode() {
-        Text text=new Text(name);
+        Text text = new Text(name);
         text.setTextAlignment(TextAlignment.CENTER);
         text.setWrappingWidth(circleRadius);
         text.setStyle("-fx-font-size: 10");
@@ -88,7 +88,7 @@ public abstract class DrawableCell extends Pane {
     }
 
     private Circle getCircleNode() {
-        Circle circle=new Circle(circleRadius);
+        Circle circle = new Circle(circleRadius);
         circle.setStroke(Color.valueOf("#463f3a"));
         circle.setStrokeWidth(1);
         circle.setFill(Color.valueOf("#bcb8b1"));
@@ -100,7 +100,7 @@ public abstract class DrawableCell extends Pane {
     }
 
     public void setView(Node view) {
-        this.view=view;
+        this.view = view;
         getChildren().add(view);
 
     }

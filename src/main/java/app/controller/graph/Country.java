@@ -30,7 +30,7 @@ public class Country extends GraphViewUtilities {
         this.cities = new ArrayList<>();
         this.name = country.name;
 
-        for (City city: country.getCities()) {
+        for (City city : country.getCities()) {
             this.createCity(city.getName());
         }
 
@@ -48,15 +48,15 @@ public class Country extends GraphViewUtilities {
 
     public void addEdge(String vertexOneLabel, String vertexTwoLabel, double weight, double initialPheromone) throws CityNotExist,
             RedundantCityName, EdgeAlreadyExists {
-        Optional<City> vertexOne=cities.stream().filter(city -> city.getName().equals(vertexOneLabel)).findFirst();
-        Optional<City> vertexTwo=
+        Optional<City> vertexOne = cities.stream().filter(city -> city.getName().equals(vertexOneLabel)).findFirst();
+        Optional<City> vertexTwo =
                 cities.stream().filter(city -> city.getName().equals(vertexTwoLabel)).findFirst();
 
         if (vertexOneLabel.equals(vertexTwoLabel)) throw new RedundantCityName(vertexOneLabel);
         if (vertexOne.isEmpty()) throw new CityNotExist(vertexOneLabel);
         if (vertexTwo.isEmpty()) throw new CityNotExist(vertexTwoLabel);
 
-        Road road=new Road(weight, initialPheromone, vertexOneLabel + "-" + vertexTwoLabel);
+        Road road = new Road(weight, initialPheromone, vertexOneLabel + "-" + vertexTwoLabel);
 
         synchronized (this) {
             vertexOne.get().addRoad(vertexTwo.get(), road);
@@ -69,8 +69,8 @@ public class Country extends GraphViewUtilities {
 
         if (city1.equals(city2)) throw new RedundantCityName(city1.getName());
 
-        String name=city1.getName() + "-" + city2.getName();
-        Road road=new Road(weight, initialPheromone, name);
+        String name = city1.getName() + "-" + city2.getName();
+        Road road = new Road(weight, initialPheromone, name);
         synchronized (this) {
             city1.addRoad(city2, road);
             city2.addRoad(city1, road);
@@ -110,7 +110,7 @@ public class Country extends GraphViewUtilities {
         Optional<City> city1 = getCity(label);
         if (city1.isPresent()) return city1.get();
         else {
-            City city=new City(label);
+            City city = new City(label);
             this.cities.add(city);
             return city;
         }
@@ -118,14 +118,14 @@ public class Country extends GraphViewUtilities {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder=new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         cities.forEach(stringBuilder::append);
         return stringBuilder.toString();
     }
 
     //borderPane | scrollPane | canvas(Group) | cellLayer(Pane)
     public void addNodesToView() {
-        ExecutorService executorService=Executors.newFixedThreadPool(12);
+        ExecutorService executorService = Executors.newFixedThreadPool(12);
         this.initView();
 
         for (City city : this.cities) {

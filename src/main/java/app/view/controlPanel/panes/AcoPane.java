@@ -1,9 +1,10 @@
 package app.view.controlPanel.panes;
 
-import app.controller.aco.AcoParameters;
+import app.controller.algorithms.aco.AcoParameters;
 import app.controller.helpers.Helpers;
 import app.view.controlPanel.ControlPanel;
 import app.view.controlPanel.Controlling;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,13 +19,13 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class AcoPane extends VBox {
 
-    private Controlling controlPanel;
+    private final Button solveButton;
+    private final Controlling controlPanel;
     private double alpha = 1;
     private double beta = 5;
     private double evaporation = 0.1;
     private int ants = 10;
     private int generations = 10;
-    private final Button solveButton;
 
     public AcoPane(Controlling controlPanel) {
         this.controlPanel = controlPanel;
@@ -45,8 +46,7 @@ public class AcoPane extends VBox {
     private Button getSolveButton() {
         Button button = new Button();
         controlPanel.getProgressBarProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) button.setDisable(true);
-            else button.setDisable(false);
+            button.setDisable(newValue);
         });
         button.setText("Solve");
         button.setPrefWidth(ControlPanel.WIDTH);
@@ -72,12 +72,14 @@ public class AcoPane extends VBox {
 
     private Node getAlphaControl() {
         VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
 
         Slider slider = new Slider(0, 10, 1);
         slider.setMajorTickUnit(1);
         slider.setMinorTickCount(0);
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
+        slider.setMaxWidth(ControlPanel.WIDTH - 20);
 
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             slider.setValue(Math.round(newValue.doubleValue()));
@@ -93,12 +95,14 @@ public class AcoPane extends VBox {
 
     private Node getBetaControl() {
         VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
 
         Slider slider = new Slider(0, 10, 5);
         slider.setMajorTickUnit(1);
         slider.setMinorTickCount(0);
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
+        slider.setMaxWidth(ControlPanel.WIDTH - 20);
 
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             slider.setValue(Math.round(newValue.doubleValue()));
@@ -114,12 +118,14 @@ public class AcoPane extends VBox {
 
     private Node getEvaporationControl() {
         VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
 
         Slider slider = new Slider(0, 1, 0.1);
         slider.setMajorTickUnit(0.1);
         slider.setMinorTickCount(0);
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
+        slider.setMaxWidth(ControlPanel.WIDTH - 20);
 
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             slider.setValue(Helpers.round(newValue.doubleValue(), 1));
@@ -137,8 +143,9 @@ public class AcoPane extends VBox {
 
     private Node getAntsControl() {
         VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
 
-        TextField antsNumberTextField = new TextField(ants+"");
+        TextField antsNumberTextField = new TextField(ants + "");
         antsNumberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 this.ants = Integer.parseInt(newValue);
@@ -157,8 +164,9 @@ public class AcoPane extends VBox {
 
     private Node getGenerationsControl() {
         VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
 
-        TextField generationNumberTextField = new TextField(generations+"");
+        TextField generationNumberTextField = new TextField(generations + "");
         generationNumberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 this.generations = Integer.parseInt(newValue);

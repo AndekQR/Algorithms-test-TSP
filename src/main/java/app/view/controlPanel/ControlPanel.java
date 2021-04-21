@@ -1,15 +1,15 @@
 package app.view.controlPanel;
 
-import app.controller.aco.AcoParameters;
-import app.controller.aco.AcoResult;
+import app.controller.algorithms.aco.AcoParameters;
+import app.controller.algorithms.sa.SimulatedAnnealingParameters;
 import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.graph.Road;
 import app.controller.helpers.LineType;
+import app.controller.utils.AlgorithmResult;
 import app.controller.utils.AlgorithmsMediator;
 import app.view.myGraphView.DrawableCell;
 import app.view.myGraphView.GraphView;
-import app.view.myGraphView.SelectingController;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -33,10 +33,10 @@ public class ControlPanel extends VBox implements Controlling {
     public static double WIDTH = 250;
     private final GraphView graphView;
     private final AlgorithmsMediator algorithmsMediator;
-    private Country selectedGraph = null;
-    private Country graphUsedNow = null;
     private final BooleanProperty progressBarShowing = new SimpleBooleanProperty(false);
     private final List<DrawableCell> selectedCells;
+    private Country selectedGraph = null;
+    private Country graphUsedNow = null;
     private Road selectedRoad;
 
     public ControlPanel(GraphView graphView) {
@@ -161,25 +161,46 @@ public class ControlPanel extends VBox implements Controlling {
         if (selectedRoad != null) selectedRoad.removeNormalLine();
     }
 
+    private void showResult(AlgorithmResult algorithmResult) {
+        List<Road> roads = algorithmResult.getBestRoad();
+        List<City> cities = algorithmResult.getBestRoadAsCities();
+        if (!roads.isEmpty()) {
+            Platform.runLater(() -> {
+                cities.get(0).highlight();
+                int i = 0;
+                while (i < roads.size()) {
+                    Road road = roads.get(i);
+                    String text = i + 1 + "\n" + "Weight: " + road.getDistance() + "\n" + "Pheromone: " + road.getPheromone();
+                    graphUsedNow.addEdgeToDraw(road, cities.get(i), cities.get(i + 1), text, LineType.HIGHLIGHTED);
+                    i++;
+                }
+                City lastCity = cities.get(cities.size() - 1);
+                City firstCity = cities.get(0);
+                Road road = lastCity.getDirections().get(firstCity);
+                String text = i + 1 + "\n" + "Weight: " + road.getDistance() + "\n" + "Pheromone: " + road.getPheromone();
+                graphUsedNow.addEdgeToDraw(road, lastCity, firstCity, text, LineType.HIGHLIGHTED);
+            });
+
+        }
+    }
+
 
     @Override
     public void solveByAco(AcoParameters parameters) {
         Optional<Country> graphForProcessingCopy = getGraphForProcessingCopy();
         if (graphForProcessingCopy.isEmpty() || parameters == null) return;
 
-        AcoResult acoResult = algorithmsMediator.solveByAcoAlgorithm(graphUsedNow, parameters);
-        List<City> cities = acoResult.getBestRoadAsCities(); //miast jest zawsze o jeden więcej od dróg, mrówka wraca
-        // do początkowego miasta na końcu!!!!
-        List<Road> roads = acoResult.getBestRoad();
-        if (!roads.isEmpty()) {
-            Platform.runLater(() -> {
-                cities.get(0).highlight();
-                for (int i = 0; i < roads.size(); i++) {
-                    Road road = roads.get(i);
-                    String text = i + 1 + "\n" + "Weight: " + road.getDistance() + "\n" + "Pheromone: " + road.getPheromone();
-                    graphUsedNow.addEdgeToDraw(road, cities.get(i), cities.get(i + 1), text, LineType.HIGHLIGHTED);
-                }
-            });
-        }
+        AlgorithmResult algorithmResult = algorithmsMediator.solveByAcoAlgorithm(graphUsedNow, parameters);
+        showResult(algorithmResult);
+
+    }
+
+    @Override
+    public void solveBySimulatedAnnealing(SimulatedAnnealingParameters parameters) {
+        Optional<Country> graphForProcessingCopy = getGraphForProcessingCopy();
+        if (graphForProcessingCopy.isEmpty() || parameters == null) return;
+
+        AlgorithmResult algorithmResult = algorithmsMediator.solveBySimulatedAnnealing(graphUsedNow, parameters);
+        showResult(algorithmResult);
     }
 }

@@ -9,26 +9,26 @@ import java.util.Collection;
 @Slf4j
 public class EqualSpacesLayout extends Layout {
 
-    private Country graph;
+    private final Country graph;
 
-    private double step=300;
+    private final double step = 300;
 
     public EqualSpacesLayout(Country graph) {
-        this.graph=graph;
+        this.graph = graph;
     }
 
     @Override
     public void execute() {
-        Collection<? extends DrawableCell> cells=graph.getCities();
-        double currentX=1;
-        double currentY=1;
+        Collection<? extends DrawableCell> cells = graph.getCities();
+        double currentX = 1;
+        double currentY = 1;
 
-        double maxInRow=Math.ceil(Math.sqrt(cells.size()));
+        double maxInRow = Math.ceil(Math.sqrt(cells.size()));
 
         for (DrawableCell cell : cells) {
             if (currentX > maxInRow) {
                 currentY++;
-                currentX=1;
+                currentX = 1;
             }
             cell.relocate(currentX * step, currentY * step);
 

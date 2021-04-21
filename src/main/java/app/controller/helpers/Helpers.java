@@ -2,9 +2,11 @@ package app.controller.helpers;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 
 public class Helpers {
 
@@ -37,6 +39,18 @@ public class Helpers {
             threadPool.shutdownNow();
             Thread.currentThread().interrupt();
             System.out.println(ex.getLocalizedMessage());
+        }
+    }
+
+    public static <T> void tupleIterator(Iterable<T> iterable, BiConsumer<T, T> consumer) {
+        Iterator<T> iterator = iterable.iterator();
+        if (!iterator.hasNext()) return;
+        T first = iterator.next();
+
+        while (iterator.hasNext()) {
+            T next = iterator.next();
+            consumer.accept(first, next);
+            first = next;
         }
     }
 

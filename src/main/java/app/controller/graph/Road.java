@@ -8,7 +8,7 @@ import lombok.Getter;
 public class Road extends DrawableEdge {
 
     private final String name;
-    private Double distance;
+    private final Double distance;
     private Double pheromone;
 
     public Road(double weight, double pheromone, String edgeName) {
@@ -18,19 +18,18 @@ public class Road extends DrawableEdge {
     }
 
     public Double addPheromone(Double pheromones) {
-        double newValue=pheromones + this.pheromone;
-        double rounded=Helpers.round(newValue, 2);
+        double newValue = pheromones + this.pheromone;
+        double rounded = Helpers.round(newValue, 2);
         this.pheromone = rounded;
         return rounded;
     }
 
     public Double evaporatePheromones(Double evaporationRate) {
-        double newValue=this.pheromone * evaporationRate;
-        double rounded=Helpers.round(newValue, 2);
+        double newValue = this.pheromone * evaporationRate;
+        double rounded = Helpers.round(newValue, 2);
         this.pheromone = rounded;
         return rounded;
     }
-
 
 
     @Override
@@ -39,7 +38,7 @@ public class Road extends DrawableEdge {
         if (!(o instanceof Road)) return false;
         if (!super.equals(o)) return false;
 
-        Road road=(Road) o;
+        Road road = (Road) o;
 
         if (!distance.equals(road.distance)) return false;
         if (!name.equals(road.name)) return false;
@@ -48,11 +47,11 @@ public class Road extends DrawableEdge {
 
     @Override
     public int hashCode() {
-        int result=super.hashCode();
+        int result = super.hashCode();
 //        int result=0;
-        result=31 * result + distance.hashCode();
-        result=31 * result + pheromone.hashCode();
-        result=31*result+name.hashCode();
+        result = 31 * result + distance.hashCode();
+        result = 31 * result + pheromone.hashCode();
+        result = 31 * result + name.hashCode();
         return result;
     }
 }

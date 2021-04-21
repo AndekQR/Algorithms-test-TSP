@@ -8,10 +8,9 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public abstract class DrawableEdge extends Group {
 
     private DrawableCell source;
@@ -23,11 +22,11 @@ public abstract class DrawableEdge extends Group {
 
 
     public void initLine(DrawableCell source, DrawableCell target) {
-        this.source=source;
-        this.target=target;
+        this.source = source;
+        this.target = target;
         this.setCache(true);
 
-        line=new Line();
+        line = new Line();
         line.setStrokeWidth(3.0);
 
         setListener();
@@ -44,7 +43,7 @@ public abstract class DrawableEdge extends Group {
     }
 
     private void setListener() {
-        InvalidationListener listener=observable -> {
+        InvalidationListener listener = observable -> {
             updateStartXYLine();
             updateEndXYLine();
         };
@@ -57,7 +56,7 @@ public abstract class DrawableEdge extends Group {
     }
 
     private Text getTextLine() {
-        Text text=new Text();
+        Text text = new Text();
         text.setStyle("-fx-background-color: white");
         text.setStrokeWidth(0.2);
         text.setStyle("-fx-font-size: 10");
@@ -73,15 +72,15 @@ public abstract class DrawableEdge extends Group {
     }
 
     private void updateStartXYLine() {
-        Point2D dir=getDirection(source, target);
-        Point2D diff=dir.multiply(DrawableCell.circleRadius);
+        Point2D dir = getDirection(source, target);
+        Point2D diff = dir.multiply(DrawableCell.circleRadius);
         line.setStartX(source.getCenterX().get() + diff.getX());
         line.setStartY(source.getCenterY().get() + diff.getY());
     }
 
     private void updateEndXYLine() {
-        Point2D dir=getDirection(target, source);
-        Point2D diff=dir.multiply(DrawableCell.circleRadius);
+        Point2D dir = getDirection(target, source);
+        Point2D diff = dir.multiply(DrawableCell.circleRadius);
         line.setEndX(target.getCenterX().get() + diff.getX());
         line.setEndY(target.getCenterY().get() + diff.getY());
     }
@@ -117,7 +116,7 @@ public abstract class DrawableEdge extends Group {
         if (this == o) return true;
         if (!(o instanceof DrawableEdge)) return false;
 
-        DrawableEdge that=(DrawableEdge) o;
+        DrawableEdge that = (DrawableEdge) o;
 
         if (source == null && (that.source != null)) return false;
         if (target == null && (that.target != null)) return false;
@@ -125,18 +124,16 @@ public abstract class DrawableEdge extends Group {
         if (that.target == null && (target != null)) return false;
 
         if (source != null && target != null) {
-            if (
-                    (!source.equals(that.source) && !target.equals(that.target)) ||
-                            (!source.equals(that.target) && !target.equals(that.source)))
-                return false;
+            return (source.equals(that.source) || target.equals(that.target)) &&
+                    (source.equals(that.target) || target.equals(that.source));
         }
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result=source != null ? source.hashCode() * 31 : 0;
-        result=result + (target != null ? target.hashCode() * 31 : 0);
+        int result = source != null ? source.hashCode() * 31 : 0;
+        result = result + (target != null ? target.hashCode() * 31 : 0);
         return result;
     }
 

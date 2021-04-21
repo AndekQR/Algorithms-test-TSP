@@ -1,4 +1,4 @@
-package app.controller.aco;
+package app.controller.algorithms.aco;
 
 
 import app.controller.graph.City;
@@ -15,33 +15,31 @@ import java.util.Optional;
 @Slf4j
 public class Ant {
 
-    private City currentCity;
     private final City initialCity;
+    private final List<Road> visitedRoads = new LinkedList<>();
+    private final List<City> visitedCities = new LinkedList<>();
+    private final List<City> unvisitedCities = new LinkedList<>();
+    private City currentCity;
     private Road lastTakenRoad;
-    private Double currentRoadsWeight =0.0;
-
-
-    private final List<Road> visitedRoads=new LinkedList<>();
-    private final List<City> visitedCities=new LinkedList<>();
-    private final List<City> unvisitedCities=new LinkedList<>();
+    private Double currentRoadsWeight = 0.0;
 
 
     public Ant(City initialCity, Collection<City> cities) {
-        this.currentCity=initialCity;
-        this.initialCity=initialCity;
+        this.currentCity = initialCity;
+        this.initialCity = initialCity;
         this.visitedCities.add(initialCity);
         this.unvisitedCities.addAll(cities);
     }
 
     public void visitCity(City city) {
-        Optional<Road> optionalRoad=this.getRoad(currentCity, city);
+        Optional<Road> optionalRoad = this.getRoad(currentCity, city);
 
         optionalRoad.ifPresent(road -> {
-            this.currentRoadsWeight +=road.getDistance();
+            this.currentRoadsWeight += road.getDistance();
             this.visitedRoads.add(road);
 
-            this.currentCity=city;
-            this.lastTakenRoad=road;
+            this.currentCity = city;
+            this.lastTakenRoad = road;
             this.unvisitedCities.remove(city);
             this.visitedCities.add(city);
         });
@@ -53,8 +51,7 @@ public class Ant {
     }
 
     public boolean isVisitPossible(City city) {
-        if (!visitedCities.contains(city) && getRoad(currentCity, city).isPresent()) return true;
-        return false;
+        return !visitedCities.contains(city) && getRoad(currentCity, city).isPresent();
 
 //        if (!city.equals(initialCity)) {
 //            return this.unvisitedCities.contains(city) && this.getRoad(currentCity, city).isPresent();

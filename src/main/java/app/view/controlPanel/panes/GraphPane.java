@@ -5,7 +5,6 @@ import app.controller.utils.GraphCreator;
 import app.db.Database;
 import app.view.controlPanel.ControlPanel;
 import app.view.controlPanel.Controlling;
-import app.view.controlPanel.ProgressBarController;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;

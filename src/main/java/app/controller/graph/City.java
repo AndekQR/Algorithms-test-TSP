@@ -13,11 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor
 public class City extends DrawableCell {
 
-    private  Map<City, Road> directions;
+    private Map<City, Road> directions;
 
     public City(String cityName) {
-        this.name=cityName;
-        this.directions=new ConcurrentHashMap<>();
+        this.name = cityName;
+        this.directions = new ConcurrentHashMap<>();
         this.initView();
     }
 
@@ -27,7 +27,7 @@ public class City extends DrawableCell {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder=new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("City name: " + name + "\n");
         directions.forEach((cityCopy, roadCopy) -> {
             stringBuilder.append(name).append(" -" + roadCopy.getDistance() + "-> ").append(cityCopy.getName()).append(
@@ -41,7 +41,7 @@ public class City extends DrawableCell {
         if (this == o) return true;
         if (!(o instanceof City)) return false;
 
-        City city=(City) o;
+        City city = (City) o;
 
         if (!name.equals(city.name)) return false;
         return directions.equals(city.directions);
@@ -49,12 +49,12 @@ public class City extends DrawableCell {
 
     @Override
     public int hashCode() {
-        int result=31 * name.hashCode();
+        int result = 31 * name.hashCode();
 
 //        for (City city : this.directions.keySet()) {
 //            result+=city.getName().hashCode();
 //        }
-        result+=this.directions.values().hashCode();
+        result += this.directions.values().hashCode();
         return result;
     }
 

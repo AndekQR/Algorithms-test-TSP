@@ -1,8 +1,9 @@
-package app.controller.aco;
+package app.controller.algorithms.aco;
 
 import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.graph.Road;
+import app.controller.utils.AlgorithmResult;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,7 +14,7 @@ public class AcoAlgorithm {
     private final Country country;
     private final Random random = new Random();
     private final Collection<Ant> ants = new ArrayList<>();
-    private AcoParameters acoParameters;
+    private final AcoParameters acoParameters;
     private Ant bestAnt;
 
     public AcoAlgorithm(Country country, AcoParameters acoParameters) {
@@ -21,7 +22,7 @@ public class AcoAlgorithm {
         this.acoParameters = acoParameters;
     }
 
-    public AcoResult solve() {
+    public AlgorithmResult solve() {
         IntStream.range(0, acoParameters.getGenerations()).forEach(i -> {
             this.initAnts();
             for (int i1 = 0; i1 < this.country.getCities().size(); i1++) {
@@ -30,7 +31,7 @@ public class AcoAlgorithm {
                 this.updateBestAnt();
             }
         });
-        return new AcoResult(getBestRoad(), getBestRoadAsCities());
+        return new AlgorithmResult(getBestRoad(), getBestRoadAsCities());
     }
 
     private List<City> getBestRoadAsCities() {

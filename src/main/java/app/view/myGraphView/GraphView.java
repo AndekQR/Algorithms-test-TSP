@@ -22,13 +22,13 @@ public class GraphView extends BorderPane {
     }
 
     public void setGraphToShow(Country country) {
-        this.displayedGraph=country;
+        this.displayedGraph = country;
 
         if (this.displayedGraph != null) {
             Platform.runLater(() -> {
                 this.getChildren().clear();
                 this.setCenter(this.displayedGraph.getView());
-                Layout layout=new EqualSpacesLayout(displayedGraph);
+                Layout layout = new EqualSpacesLayout(displayedGraph);
                 layout.execute();
             });
         }

@@ -1,6 +1,8 @@
 package app.controller.utils;
 
-import app.controller.graph.*;
+import app.controller.graph.City;
+import app.controller.graph.Country;
+import app.controller.graph.RedundantCityName;
 import app.controller.helpers.Helpers;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +21,7 @@ public class GraphCreator {
 
     public Country createFullGraph(int vertices, String name) {
 
-        Country country=new Country(name);
+        Country country = new Country(name);
 
         IntStream.range(0, vertices).forEach(i -> {
             try {
@@ -30,18 +32,18 @@ public class GraphCreator {
         });
 
 
-        List<City> cities=country.getCities();
+        List<City> cities = country.getCities();
         for (City city : cities) {
-                executorService.submit(() -> {
-                    for (City city1 : cities) {
-                        try {
-                            country.addEdge(city, city1, Helpers.getRandomNumber(0, 50),
-                                    Helpers.getRandomNumber(0, 15));
-                        } catch (RedundantCityName ignored) {
+            executorService.submit(() -> {
+                for (City city1 : cities) {
+                    try {
+                        country.addEdge(city, city1, Helpers.getRandomNumber(0, 50),
+                                Helpers.getRandomNumber(0, 15));
+                    } catch (RedundantCityName ignored) {
 //                            log.info(ignored.getLocalizedMessage());
-                        }
                     }
-                });
+                }
+            });
         }
 
         Helpers.awaitTerminationAfterShutdown(executorService);
@@ -51,8 +53,8 @@ public class GraphCreator {
     }
 
     private Set<String> getCitiesNames(int number) {
-        Faker faker=new Faker();
-        Set<String> names=new HashSet<>();
+        Faker faker = new Faker();
+        Set<String> names = new HashSet<>();
         while (names.size() < number) {
             names.add(faker.address().city());
         }

@@ -5,18 +5,15 @@ import app.controller.graph.Country;
 import app.controller.graph.RedundantCityName;
 import lombok.extern.slf4j.Slf4j;
 import org.neo4j.driver.*;
-import org.neo4j.driver.exceptions.ServiceUnavailableException;
 import org.neo4j.driver.util.Pair;
 
 import java.util.*;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class Database {
 
-    private Driver driver;
+    private final Driver driver;
 
     public Database() {
         this.driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "123"));
