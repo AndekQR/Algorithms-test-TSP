@@ -19,6 +19,7 @@ public class Database {
         this.driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "123"));
     }
 
+
     public boolean saveGraph(Country country) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
@@ -55,6 +56,7 @@ public class Database {
         }
         return true;
     }
+
 
     public Country getGraph(String name) {
         try (Session session = driver.session()) {

@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 public class SimulatedAnnealingParameters {
 
-    private final double initialTemperature = 10000;
-    private final double coolingRate = 0.003;
+    private double initialTemperature = 10000;
+    private double coolingRate = 0.003;
 }

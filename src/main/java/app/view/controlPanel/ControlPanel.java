@@ -2,6 +2,7 @@ package app.view.controlPanel;
 
 import app.controller.algorithms.aco.AcoParameters;
 import app.controller.algorithms.sa.SimulatedAnnealingParameters;
+import app.controller.algorithms.ts.TabuSearchParameters;
 import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.graph.Road;
@@ -135,7 +136,9 @@ public class ControlPanel extends VBox implements Controlling {
             for (DrawableCell copySelectedCell : copySelectedCells) {
                 copySelectedCell.unSelect();
             }
-            selectedRoad.removeNormalLine();
+            if (selectedRoad != null) {
+                selectedRoad.removeNormalLine();
+            }
         }
         selectedCells.add(cell);
 
@@ -201,6 +204,15 @@ public class ControlPanel extends VBox implements Controlling {
         if (graphForProcessingCopy.isEmpty() || parameters == null) return;
 
         AlgorithmResult algorithmResult = algorithmsMediator.solveBySimulatedAnnealing(graphUsedNow, parameters);
+        showResult(algorithmResult);
+    }
+
+    @Override
+    public void solveByTabuSearch(TabuSearchParameters parameters) {
+        Optional<Country> graphForProcessingCopy = getGraphForProcessingCopy();
+        if (graphForProcessingCopy.isEmpty() || parameters == null) return;
+
+        AlgorithmResult algorithmResult = algorithmsMediator.solveByTabuSearchAlgorithm(graphUsedNow, parameters);
         showResult(algorithmResult);
     }
 }

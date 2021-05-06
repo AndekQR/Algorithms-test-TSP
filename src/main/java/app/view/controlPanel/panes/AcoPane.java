@@ -41,13 +41,20 @@ public class AcoPane extends VBox {
 
         this.getChildren().addAll(alphaControl, betaControl, evaporationControl, antsControl, generationsControl,
                 solveButton);
+
+        controlPanel.getProgressBarProperty().addListener((observable, oldValue, newValue) -> {
+            solveButton.setDisable(newValue);
+            alphaControl.setDisable(newValue);
+            betaControl.setDisable(newValue);
+            evaporationControl.setDisable(newValue);
+            antsControl.setDisable(newValue);
+            generationsControl.setDisable(newValue);
+        });
     }
 
     private Button getSolveButton() {
         Button button = new Button();
-        controlPanel.getProgressBarProperty().addListener((observable, oldValue, newValue) -> {
-            button.setDisable(newValue);
-        });
+
         button.setText("Solve");
         button.setPrefWidth(ControlPanel.WIDTH);
         button.setOnMouseClicked(event -> {
@@ -85,6 +92,7 @@ public class AcoPane extends VBox {
             slider.setValue(Math.round(newValue.doubleValue()));
             this.alpha = newValue.intValue();
         });
+        this.alpha = slider.getValue();
 
         Label label = new Label("Alpha");
         label.setLabelFor(slider);
@@ -108,6 +116,7 @@ public class AcoPane extends VBox {
             slider.setValue(Math.round(newValue.doubleValue()));
             this.beta = newValue.intValue();
         });
+        this.beta = slider.getValue();
 
         Label label = new Label("Beta");
         label.setLabelFor(slider);
@@ -131,7 +140,7 @@ public class AcoPane extends VBox {
             slider.setValue(Helpers.round(newValue.doubleValue(), 1));
             this.evaporation = newValue.doubleValue();
         });
-
+        this.evaporation = slider.getValue();
 
         Label label = new Label("Evaporation rate");
         label.setLabelFor(slider);

@@ -28,10 +28,10 @@ public class City extends DrawableCell {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("City name: " + name + "\n");
+        stringBuilder.append("City name: " + name + "  ");
         directions.forEach((cityCopy, roadCopy) -> {
             stringBuilder.append(name).append(" -" + roadCopy.getDistance() + "-> ").append(cityCopy.getName()).append(
-                    "\n");
+                    " | ");
         });
         return stringBuilder.toString();
     }

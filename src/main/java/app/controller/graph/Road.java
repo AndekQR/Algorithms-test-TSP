@@ -31,7 +31,6 @@ public class Road extends DrawableEdge {
         return rounded;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

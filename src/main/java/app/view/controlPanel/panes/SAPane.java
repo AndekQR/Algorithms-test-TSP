@@ -29,6 +29,12 @@ public class SAPane extends VBox {
         Node collingRateControl = getCollingRateControl();
 
         this.getChildren().addAll(temperatureControl, collingRateControl, solveButton);
+
+        controlling.getProgressBarProperty().addListener((observable, oldValue, newValue) -> {
+            solveButton.setDisable(newValue);
+            temperatureControl.setDisable(newValue);
+            collingRateControl.setDisable(newValue);
+        });
     }
 
     private Node getSolveButton() {
@@ -67,7 +73,7 @@ public class SAPane extends VBox {
             slider.setValue(Helpers.round(newValue.doubleValue(), 0));
             this.temerature = newValue.intValue();
         });
-
+        this.temerature = (int) slider.getValue();
 
         Label label = new Label("Initial temperature");
         label.setLabelFor(slider);
@@ -91,6 +97,7 @@ public class SAPane extends VBox {
             slider.setValue(Helpers.round(newValue.doubleValue(), 3));
             this.coolingRate = newValue.doubleValue();
         });
+        this.coolingRate = slider.getValue();
 
 
         Label label = new Label("Cooling rate");
