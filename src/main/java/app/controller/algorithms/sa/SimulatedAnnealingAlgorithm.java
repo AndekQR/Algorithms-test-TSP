@@ -1,5 +1,6 @@
 package app.controller.algorithms.sa;
 
+import app.controller.algorithms.Algorithm;
 import app.controller.algorithms.AlgorithmsUtils;
 import app.controller.graph.City;
 import app.controller.graph.Country;
@@ -9,7 +10,7 @@ import app.controller.utils.AlgorithmResult;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimulatedAnnealingAlgorithm {
+public class SimulatedAnnealingAlgorithm implements Algorithm {
 
     private final Country country;
     private final SimulatedAnnealingParameters params;
@@ -31,6 +32,7 @@ public class SimulatedAnnealingAlgorithm {
         return new ArrayList<>(cities);
     }
 
+    @Override
     public AlgorithmResult solve() {
         List<City> actualSolution = generateInitialSolution();
         bestSolution = new ArrayList<>(actualSolution);

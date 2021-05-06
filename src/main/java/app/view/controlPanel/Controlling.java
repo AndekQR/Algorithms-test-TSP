@@ -19,4 +19,6 @@ public interface Controlling extends ProgressBarController, SelectingController 
     void solveBySimulatedAnnealing(SimulatedAnnealingParameters parameters);
 
     void solveByTabuSearch(TabuSearchParameters parameters);
+
+    void solveByNearestNeighbourAlgorithm();
 }

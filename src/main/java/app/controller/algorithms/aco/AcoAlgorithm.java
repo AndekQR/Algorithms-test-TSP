@@ -1,5 +1,6 @@
 package app.controller.algorithms.aco;
 
+import app.controller.algorithms.Algorithm;
 import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.graph.Road;
@@ -9,7 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class AcoAlgorithm {
+public class AcoAlgorithm implements Algorithm {
 
     private final Country country;
     private final Random random = new Random();
@@ -22,6 +23,7 @@ public class AcoAlgorithm {
         this.acoParameters = acoParameters;
     }
 
+    @Override
     public AlgorithmResult solve() {
         IntStream.range(0, acoParameters.getGenerations()).forEach(i -> {
             this.initAnts();

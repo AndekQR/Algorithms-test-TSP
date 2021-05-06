@@ -24,7 +24,7 @@ public class AlgorithmsTabPane extends Accordion {
         TitledPane acoTab = new TitledPane(acoName, new AcoPane(controlPanel));
         TitledPane tabuTab = new TitledPane(tabuName, new TabuPane(controlPanel));
         TitledPane aSTab = new TitledPane(simulatingAnnealingName, new SAPane(controlPanel));
-        TitledPane nNaTab = new TitledPane(nearestNeighbourAlgorithmName, new NNAPane());
+        TitledPane nNaTab = new TitledPane(nearestNeighbourAlgorithmName, new NNAPane(controlPanel));
 
         this.setExpandedPane(graphTab);
         this.getPanes().addAll(graphTab, acoTab, tabuTab, aSTab, nNaTab);

@@ -150,7 +150,7 @@ public class ControlPanel extends VBox implements Controlling {
                 if (road.isPresent()) {
                     Road road1 = road.get();
                     String text =
-                            "Weight: " + road1.getDistance() + "\n" + "Pheromone: " + road1.getPheromone();
+                            "Weight: " + road1.getDistance();
                     graphUsedNow.addEdgeToDraw(road1, drawableCell, drawableCellOne, text, LineType.NORMAL);
                     selectedRoad = road1;
                 }
@@ -173,14 +173,14 @@ public class ControlPanel extends VBox implements Controlling {
                 int i = 0;
                 while (i < roads.size()) {
                     Road road = roads.get(i);
-                    String text = i + 1 + "\n" + "Weight: " + road.getDistance() + "\n" + "Pheromone: " + road.getPheromone();
+                    String text = i + 1 + "\n" + "Weight: " + road.getDistance();
                     graphUsedNow.addEdgeToDraw(road, cities.get(i), cities.get(i + 1), text, LineType.HIGHLIGHTED);
                     i++;
                 }
                 City lastCity = cities.get(cities.size() - 1);
                 City firstCity = cities.get(0);
                 Road road = lastCity.getDirections().get(firstCity);
-                String text = i + 1 + "\n" + "Weight: " + road.getDistance() + "\n" + "Pheromone: " + road.getPheromone();
+                String text = i + 1 + "\n" + "Weight: " + road.getDistance();
                 graphUsedNow.addEdgeToDraw(road, lastCity, firstCity, text, LineType.HIGHLIGHTED);
             });
 
@@ -213,6 +213,15 @@ public class ControlPanel extends VBox implements Controlling {
         if (graphForProcessingCopy.isEmpty() || parameters == null) return;
 
         AlgorithmResult algorithmResult = algorithmsMediator.solveByTabuSearchAlgorithm(graphUsedNow, parameters);
+        showResult(algorithmResult);
+    }
+
+    @Override
+    public void solveByNearestNeighbourAlgorithm() {
+        Optional<Country> graphForProcessingCopy = getGraphForProcessingCopy();
+        if (graphForProcessingCopy.isEmpty()) return;
+
+        AlgorithmResult algorithmResult = algorithmsMediator.solveByNearestNeighbourAlgorithm(graphUsedNow);
         showResult(algorithmResult);
     }
 }

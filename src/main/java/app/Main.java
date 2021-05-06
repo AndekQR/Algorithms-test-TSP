@@ -3,6 +3,7 @@ package app;
 import app.view.controlPanel.ControlPanel;
 import app.view.myGraphView.GraphView;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -32,7 +33,10 @@ public class Main extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
 
-//        AcoAlgorithm acoAlgorithm=new AcoAlgorithm(copyGraph);
-//        acoAlgorithm.solve();
+        primaryStage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
+
     }
 }

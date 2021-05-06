@@ -1,5 +1,6 @@
 package app.controller.algorithms.ts;
 
+import app.controller.algorithms.Algorithm;
 import app.controller.algorithms.AlgorithmsUtils;
 import app.controller.graph.City;
 import app.controller.graph.Country;
@@ -8,7 +9,7 @@ import app.controller.utils.AlgorithmResult;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabuSearchAlgorithm {
+public class TabuSearchAlgorithm implements Algorithm {
 
     private final Country country;
     private final TabuSearchParameters params;
@@ -26,6 +27,8 @@ public class TabuSearchAlgorithm {
         this.params = params;
     }
 
+
+    @Override
     public AlgorithmResult solve() {
         long iteration = 0;
         initPaths();

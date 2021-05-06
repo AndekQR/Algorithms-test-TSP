@@ -3,8 +3,11 @@ package app.db;
 import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.graph.RedundantCityName;
+
+import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 import org.neo4j.driver.*;
+import org.neo4j.driver.exceptions.ServiceUnavailableException;
 import org.neo4j.driver.util.Pair;
 
 import java.util.*;
@@ -17,6 +20,14 @@ public class Database {
 
     public Database() {
         this.driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "123"));
+
+        try{
+            driver.verifyConnectivity();
+        }catch (ServiceUnavailableException exception) {
+            log.error("Database connection error");
+            Platform.exit();
+            System.exit(0);
+        }
     }
 
 
