@@ -5,8 +5,11 @@ import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.graph.Road;
 import app.controller.utils.AlgorithmResult;
+import app.controller.utils.algorithmListener.AlgorithmEventListener;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -17,14 +20,17 @@ public class AcoAlgorithm implements Algorithm {
     private final Collection<Ant> ants = new ArrayList<>();
     private final AcoParameters acoParameters;
     private Ant bestAnt;
+    private final ExecutorService executorService;
 
     public AcoAlgorithm(Country country, AcoParameters acoParameters) {
         this.country = country;
         this.acoParameters = acoParameters;
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     @Override
-    public AlgorithmResult solve() {
+    public AlgorithmResult solve(AlgorithmEventListener algorithmEventListener) {
+        executorService.submit(() -> algorithmEventListener.algorithmStart(acoParameters));
         IntStream.range(0, acoParameters.getGenerations()).forEach(i -> {
             this.initAnts();
             for (int i1 = 0; i1 < this.country.getCities().size(); i1++) {
@@ -32,7 +38,10 @@ public class AcoAlgorithm implements Algorithm {
                 this.updateRoads();
                 this.updateBestAnt();
             }
+            executorService.submit(() -> algorithmEventListener.iterationComplete(getBestRoadAsCities(), i));
         });
+        executorService.submit(() -> algorithmEventListener.algorithmStop(getBestRoadAsCities()));
+        executorService.shutdown();
         return new AlgorithmResult(getBestRoad(), getBestRoadAsCities());
     }
 
@@ -64,7 +73,7 @@ public class AcoAlgorithm implements Algorithm {
             boolean visitedRandomCity = false;
 
             if (this.random.nextDouble() < acoParameters.getRandomFactor()) {
-                int cityIndex = this.random.nextInt(this.country.countrySize() - 1); //TODO: może być problem z countrySIze
+                int cityIndex = this.random.nextInt(this.country.countrySize() - 1);
                 City randomCity = this.country.getCities().get(cityIndex);
 
                 if (ant.isVisitPossible(randomCity)) {

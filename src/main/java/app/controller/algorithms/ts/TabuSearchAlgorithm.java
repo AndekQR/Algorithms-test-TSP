@@ -5,9 +5,12 @@ import app.controller.algorithms.AlgorithmsUtils;
 import app.controller.graph.City;
 import app.controller.graph.Country;
 import app.controller.utils.AlgorithmResult;
+import app.controller.utils.algorithmListener.AlgorithmEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TabuSearchAlgorithm implements Algorithm {
 
@@ -15,21 +18,23 @@ public class TabuSearchAlgorithm implements Algorithm {
     private final TabuSearchParameters params;
     private List<City> bestSolution = new ArrayList<>();
     private double bestSolutionDistance;
-    private final AlgorithmsUtils algorithmsUtils;
     private List<City> currentSolution;
     private double currentSolutionDistance;
     private final TabuList tabuList;
+    private final ExecutorService executorService;
+
 
     public TabuSearchAlgorithm(Country country, TabuSearchParameters params) {
-        this.algorithmsUtils = new AlgorithmsUtils();
         this.tabuList = new TabuList();
         this.country = country;
         this.params = params;
+        this.executorService = Executors.newSingleThreadExecutor();
     }
 
 
     @Override
-    public AlgorithmResult solve() {
+    public AlgorithmResult solve(AlgorithmEventListener algorithmEventListener) {
+        executorService.submit(() -> algorithmEventListener.algorithmStart(params));
         long iteration = 0;
         initPaths();
         while (iteration < params.getIterations()) {
@@ -46,23 +51,27 @@ public class TabuSearchAlgorithm implements Algorithm {
                 setNewBestSolution(currentSolution);
             }
 
+            long finalIteration = iteration;
+            executorService.submit(() -> algorithmEventListener.iterationComplete(bestSolution, finalIteration));
             iteration++;
         }
-        return new AlgorithmResult(algorithmsUtils.solutionByRoads(bestSolution), bestSolution);
+        executorService.submit(() -> algorithmEventListener.algorithmStop(bestSolution));
+        executorService.shutdown();
+        return new AlgorithmResult(AlgorithmsUtils.solutionByRoads(bestSolution), bestSolution);
     }
 
     private void setNewBestSolution(List<City> solution) {
         this.bestSolution = new ArrayList<>(solution);
-        this.bestSolutionDistance = algorithmsUtils.calculateSolutionDistance(solution);
+        this.bestSolutionDistance = AlgorithmsUtils.calculateSolutionDistance(solution);
     }
 
     private void setNewCurrentSolution(List<City> solution) {
         this.currentSolution = new ArrayList<>(solution);
-        this.currentSolutionDistance = algorithmsUtils.calculateSolutionDistance(solution);
+        this.currentSolutionDistance = AlgorithmsUtils.calculateSolutionDistance(solution);
     }
 
     private void initPaths() {
-        List<City> randomPath = algorithmsUtils.generateRandomPath(country);
+        List<City> randomPath = AlgorithmsUtils.generateRandomPath(country);
         setNewCurrentSolution(randomPath);
         setNewBestSolution(randomPath);
     }

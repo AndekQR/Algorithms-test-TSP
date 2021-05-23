@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class AlgorithmsUtils {
 
-    public List<City> generateRandomPath(final Country country) {
+    public static List<City> generateRandomPath(final Country country) {
         List<City> cities = country.getCities();
         List<City> result = new ArrayList<>();
         int startCitIndex = Helpers.getRandomNumber(0, cities.size());
@@ -33,7 +33,7 @@ public class AlgorithmsUtils {
         return result;
     }
 
-    public double calculateSolutionDistance(final List<City> solution) {
+    public static double calculateSolutionDistance(final List<City> solution) {
         AtomicReference<Double> result = new AtomicReference<>(0D);
         Helpers.tupleIterator(solution, (city, city2) -> {
             if (!city.equals(city2)) {
@@ -44,7 +44,7 @@ public class AlgorithmsUtils {
         return result.get();
     }
 
-    public void swap(List<City> cities, City one, City two) {
+    public static void swap(List<City> cities, City one, City two) {
         if (!(cities.contains(one) || cities.contains(two))) return;
 
         int cityOneIndex = cities.indexOf(one);
@@ -53,7 +53,7 @@ public class AlgorithmsUtils {
         Collections.swap(cities, cityOneIndex, cityTwoIndex);
     }
 
-    public List<Road> solutionByRoads(List<City> cities) {
+    public static List<Road> solutionByRoads(List<City> cities) {
         List<Road> roads = new ArrayList<>();
         Helpers.tupleIterator(cities, (city, city2) -> {
             Road road = city.getDirections().get(city2);

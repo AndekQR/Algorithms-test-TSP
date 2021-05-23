@@ -1,5 +1,6 @@
 package app.view.controlPanel;
 
+import app.Main;
 import app.controller.algorithms.aco.AcoParameters;
 import app.controller.algorithms.sa.SimulatedAnnealingParameters;
 import app.controller.algorithms.ts.TabuSearchParameters;
@@ -9,21 +10,24 @@ import app.controller.graph.Road;
 import app.controller.helpers.LineType;
 import app.controller.utils.AlgorithmResult;
 import app.controller.utils.AlgorithmsMediator;
+import app.controller.utils.ExcelWriter;
+import app.controller.utils.algorithmListener.AlgorithmEventListener;
+import app.controller.utils.algorithmListener.DataLogger;
 import app.view.myGraphView.DrawableCell;
 import app.view.myGraphView.GraphView;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,8 +43,11 @@ public class ControlPanel extends VBox implements Controlling {
     private Country selectedGraph = null;
     private Country graphUsedNow = null;
     private Road selectedRoad;
+    private AlgorithmEventListener algorithmEventListener;
+
 
     public ControlPanel(GraphView graphView) {
+        this.algorithmEventListener = new DataLogger();
         selectedCells = new ArrayList<>();
         this.graphView = graphView;
         this.algorithmsMediator = new AlgorithmsMediator();
@@ -49,11 +56,19 @@ public class ControlPanel extends VBox implements Controlling {
 
     private void init() {
         this.setPrefWidth(WIDTH);
+        this.setPrefHeight(Main.HEIGHT);
         this.setStyle("-fx-background-color: #e0afa0");
         this.setAlignment(Pos.TOP_CENTER);
 
         AlgorithmsTabPane algorithmsTabPane = new AlgorithmsTabPane(this);
-        this.getChildren().add(algorithmsTabPane);
+
+        AnchorPane anchorPane = new AnchorPane();
+        anchorPane.setPrefHeight(Main.HEIGHT);
+        AnchorPane.setTopAnchor(algorithmsTabPane, 0D);
+        anchorPane.getChildren().addAll(algorithmsTabPane);
+
+
+        this.getChildren().add(anchorPane);
 
     }
 
@@ -193,8 +208,9 @@ public class ControlPanel extends VBox implements Controlling {
         Optional<Country> graphForProcessingCopy = getGraphForProcessingCopy();
         if (graphForProcessingCopy.isEmpty() || parameters == null) return;
 
-        AlgorithmResult algorithmResult = algorithmsMediator.solveByAcoAlgorithm(graphUsedNow, parameters);
+        AlgorithmResult algorithmResult = algorithmsMediator.solveByAcoAlgorithm(graphUsedNow, parameters, algorithmEventListener);
         showResult(algorithmResult);
+        algorithmEventListener.saveResultToExcelFile();
 
     }
 
@@ -203,8 +219,9 @@ public class ControlPanel extends VBox implements Controlling {
         Optional<Country> graphForProcessingCopy = getGraphForProcessingCopy();
         if (graphForProcessingCopy.isEmpty() || parameters == null) return;
 
-        AlgorithmResult algorithmResult = algorithmsMediator.solveBySimulatedAnnealing(graphUsedNow, parameters);
+        AlgorithmResult algorithmResult = algorithmsMediator.solveBySimulatedAnnealing(graphUsedNow, parameters, algorithmEventListener);
         showResult(algorithmResult);
+        algorithmEventListener.saveResultToExcelFile();
     }
 
     @Override
@@ -212,8 +229,9 @@ public class ControlPanel extends VBox implements Controlling {
         Optional<Country> graphForProcessingCopy = getGraphForProcessingCopy();
         if (graphForProcessingCopy.isEmpty() || parameters == null) return;
 
-        AlgorithmResult algorithmResult = algorithmsMediator.solveByTabuSearchAlgorithm(graphUsedNow, parameters);
+        AlgorithmResult algorithmResult = algorithmsMediator.solveByTabuSearchAlgorithm(graphUsedNow, parameters, algorithmEventListener);
         showResult(algorithmResult);
+        algorithmEventListener.saveResultToExcelFile();
     }
 
     @Override
@@ -221,7 +239,8 @@ public class ControlPanel extends VBox implements Controlling {
         Optional<Country> graphForProcessingCopy = getGraphForProcessingCopy();
         if (graphForProcessingCopy.isEmpty()) return;
 
-        AlgorithmResult algorithmResult = algorithmsMediator.solveByNearestNeighbourAlgorithm(graphUsedNow);
+        AlgorithmResult algorithmResult = algorithmsMediator.solveByNearestNeighbourAlgorithm(graphUsedNow, algorithmEventListener);
         showResult(algorithmResult);
+        algorithmEventListener.saveResultToExcelFile();
     }
 }
